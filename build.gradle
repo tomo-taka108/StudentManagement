@@ -13,13 +13,35 @@ java {
 	}
 }
 
+// Lombokを正しく動かすための補助設定（とりあえずLombok使うならこれ書いておくのが安全！）
+configurations{
+	compileOnly{
+		extendsFrom annotationProcessor
+	}
+}
+
 repositories {
 	mavenCentral()
 }
 
 dependencies {
+	// Webアプリ用（Spring Boot関係）
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// 便利機能、ユーティリティ
 	implementation("org.apache.commons:commons-lang3:3.17.0")
+
+	// Lombokの設定（この２行が必要！）
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// MySQLドライバ
+	implementation'com.mysql:mysql-connector-j:9.3.0'
+
+	// MyBatisのスターター
+	implementation'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
+
+	// テスト用
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
