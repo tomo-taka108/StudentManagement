@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>受講生一覧</title>
+</head>
+<body>
+<h1>受講生情報一覧</h1>
+<table border="1">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>名前</th>
+    <th>カナ名</th>
+    <th>ニックネーム</th>
+    <th>メールアドレス</th>
+    <th>地域</th>
+    <th>年齢</th>
+    <th>性別</th>
+    <th>備考</th>
+    <th>受講コース</th>
+    <th>受講開始日</th>
+    <th>受講終了予定日</th>
+  </tr>
+  </thead>
+  <tbody>
+  <!-- studentListから1人ずつ取り出し -->
+  <tr th:each="studentDetail: ${studentList}">
+    <td th:text="${studentDetail.student.id}">ID</td>
+    <td th:text="${studentDetail.student.name}">名前</td>
+    <td th:text="${studentDetail.student.kanaName}">カナ名</td>
+    <td th:text="${studentDetail.student.nickname}">ニックネーム</td>
+    <td th:text="${studentDetail.student.email}">メール</td>
+    <td th:text="${studentDetail.student.area}">地域</td>
+    <td th:text="${studentDetail.student.age}">年齢</td>
+    <td th:text="${studentDetail.student.sex}">性別</td>
+    <td th:text="${studentDetail.student.remark}">備考</td>
+
+    <!-- 以下の3つの列を、受講コースが複数ある場合はまとめて表示 -->
+    <td>
+      <div th:each="course : ${studentDetail.studentCourses}">
+        <p th:text="${course.courseName}">コース名</p>
+      </div>
+    </td>
+    <td>
+      <div th:each="course : ${studentDetail.studentCourses}">
+        <p th:text="${course.startDate}">開始日</p>
+      </div>
+    </td>
+    <td>
+      <div th:each="course : ${studentDetail.studentCourses}">
+        <p th:text="${course.endDate}">終了予定日</p>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
+
+</html>
