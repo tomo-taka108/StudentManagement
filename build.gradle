@@ -28,6 +28,9 @@ dependencies {
 	// Webアプリ用（Spring Boot関係）
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
+	// Thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
 	// 便利機能、ユーティリティ
 	implementation("org.apache.commons:commons-lang3:3.17.0")
 

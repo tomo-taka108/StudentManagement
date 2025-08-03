@@ -24,6 +24,7 @@ public class StudentService {
 
   public List<StudentCourses> searchStudentCoursesList() {
     return repository.searchCourses();
+
   }
 
 }
