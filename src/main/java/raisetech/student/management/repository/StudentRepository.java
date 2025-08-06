@@ -32,14 +32,16 @@ public interface StudentRepository {
    */
   @Insert("INSERT INTO students(name,kana_name,nickname,email,area,age,sex,remark,isDeleted)"
       + "VALUES(#{name},#{kanaName},#{nickname},#{email},#{area},#{age},#{sex},#{remark},false)")
-  @Options(useGeneratedKeys = true, keyProperty = "id") // DBが自動採番の時に、その決まったIDをJavaオブジェクトの"id"にセットしてくれる
+  @Options(useGeneratedKeys = true, keyProperty = "id")
+  // DBが自動採番の時に、その決まったIDをJavaオブジェクトの"id"にセットしてくれる
   void registerStudent(Student student);
 
   /**
    * 受講生コース情報を登録
    */
-  @Insert("INSERT INTO student_courses(studentId,courseName,startDate,endDate)"
+  @Insert("INSERT INTO student_courses(student_id,course_name,start_date,end_date)"
       + "VALUES(#{studentId},#{courseName},#{startDate},#{endDate})")
-  void insertCourse(StudentCourses course);
+  @Options(useGeneratedKeys = true, keyProperty = "id")
+  void registerStudentCourses(StudentCourses studentCourses);
 
 }
