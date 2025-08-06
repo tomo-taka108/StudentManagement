@@ -1,6 +1,7 @@
 package raisetech.student.management.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,9 @@ public class StudentController {
 
   @GetMapping("/newStudent") // 登録フォーム画面表示のURL
   public String newStudent(Model model) {
-    model.addAttribute("studentDetail", new StudentDetail());
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudentCourses(Arrays.asList(new StudentCourses()));
+    model.addAttribute("studentDetail", studentDetail);
     return "registerStudent";
   }
 
@@ -57,11 +60,11 @@ public class StudentController {
       return "registerStudent";
     }
 
-    // 課題28　新規受講生情報を登録する処理を実装する。→登録された受講生情報がstudentListとして画面表示されるところまで確認する。
-    // 課題28(チャレンジ)　コース情報も一緒に登録できるように実装する。コースは単体でよい。→同様に画面表示まで確認する。
+    // 課題28①　新規受講生情報を登録する処理を実装する。→登録された受講生情報がstudentListとして画面表示されるところまで確認する。
+    // 課題28②　コース情報も一緒に登録できるように実装する。コースは単体でよい。→同様に画面表示まで確認する。
 
     // 学生情報を登録
-    service.insertStudent(studentDetail);
+    service.registerStudent(studentDetail);
     return "redirect:/studentList";
   }
 
