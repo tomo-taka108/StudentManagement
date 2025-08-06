@@ -10,7 +10,7 @@ import raisetech.student.management.data.StudentCourses;
 
 /**
  * 受講生情報を扱うリポジトリ。
- *
+ * <p>
  * 全件検索や単一条件での検索、コース情報の検索が行えるクラスです。
  */
 @Mapper
@@ -31,8 +31,9 @@ public interface StudentRepository {
    * 受講生情報を登録
    */
   @Insert("INSERT INTO students(name,kana_name,nickname,email,area,age,sex,remark,isDeleted)"
-      + "VALUES(#{name},#{kanaName},#{nickname},#{email},#{area},#{age},#{sex},#{remark},#{isDeleted})")
-  void insertStudent(Student student);
+      + "VALUES(#{name},#{kanaName},#{nickname},#{email},#{area},#{age},#{sex},#{remark},false)")
+  @Options(useGeneratedKeys = true, keyProperty = "id") // DBが自動採番の時に、その決まったIDをJavaオブジェクトの"id"にセットしてくれる
+  void registerStudent(Student student);
 
   /**
    * 受講生コース情報を登録
