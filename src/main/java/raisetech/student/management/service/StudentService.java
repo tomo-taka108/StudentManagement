@@ -31,13 +31,23 @@ public class StudentService {
     return repository.searchCourses();
   }
 
+  // 特定id取得用メソッド【受講生情報】
+  public Student searchById(String id) {
+    return repository.searchById(id);
+  }
+
+  // 特定id取得用メソッド【受講生コース情報】
+  public List<StudentCourses> searchCoursesById(String studentId) {
+    return repository.searchCoursesByStudentId(studentId);
+  }
+
 
   @Transactional // 登録・更新・削除したりする場合は、Service層で必ずつける！
 
   // TODO:登録用メソッド【受講生情報】
   public void registerStudent(StudentDetail studentDetail) {
     repository.registerStudent(studentDetail.getStudent());
-  // TODO:登録用メソッド【受講生コース情報】
+    // TODO:登録用メソッド【受講生コース情報】
     for (StudentCourses studentCourse : studentDetail.getStudentCourses()) {
       studentCourse.setStudentId(studentDetail.getStudent().getId());
       studentCourse.setStartDate(LocalDateTime.now());
