@@ -5,27 +5,37 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourses;
+import raisetech.student.management.domain.StudentDetail;
 
 /**
- * 受講生情報を扱うリポジトリ。
- * <p>
- * 全件検索や単一条件での検索、コース情報の検索が行えるクラスです。
+ * 受講生情報を扱うリポジトリ。 全件検索や単一条件での検索、コース情報の検索が行えるクラスです。
  */
 @Mapper
 public interface StudentRepository {
 
   /**
-   * 全件検索します。
-   *
-   * @return 全件検索した受講生情報の一覧
+   * 全件検索した受講生情報の一覧
    */
   @Select("SELECT * FROM students")
   List<Student> search();
 
   @Select("SELECT * FROM student_courses")
   List<StudentCourses> searchCourses();
+
+  /**
+   * 特定条件での受講生情報の一覧
+   */
+  @Select("SELECT * FROM students WHERE id = #{id}")
+  Student searchById(String id);
+
+  /**
+   * 特定条件での受講生コース情報の一覧
+   */
+  @Select("SELECT * FROM student_courses WHERE student_id = #{studentId}")
+  List<StudentCourses> searchCoursesByStudentId(String studentId);
 
   /**
    * 受講生情報を登録
@@ -43,5 +53,19 @@ public interface StudentRepository {
       + "VALUES(#{studentId},#{courseName},#{startDate},#{endDate})")
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void registerStudentCourses(StudentCourses studentCourses);
+
+  /**
+   * 受講生情報を更新
+   */
+  @Update("UPDATE students SET name = #{name}, kana_name = #{kanaName}, nickname = #{nickname}, email = #{email}, area = #{area}, "
+      + "age = #{age}, sex = #{sex}, remark = #{remark}, isDeleted = false  WHERE id = #{id}")
+  void updateStudent(Student student);
+
+  /**
+   * 受講生コース情報を更新
+   */
+  @Update("UPDATE student_courses SET course_name = #{courseName}, "
+      + "start_date = #{startDate}, end_date = #{endDate}  WHERE id = #{id}")
+  void updateStudentCourses(StudentCourses studentCourses);
 
 }
