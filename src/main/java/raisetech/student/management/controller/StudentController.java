@@ -70,7 +70,7 @@ public class StudentController {
   @GetMapping("/editStudent")
   public String editStudent(@RequestParam("id") String id, Model model) {
     Student student = service.searchById(id);
-    List<StudentCourses> studentCourses = service.searchCoursesById(id);
+    List<StudentCourses> studentCourses = service.searchCoursesByStudentId(id);
 
     StudentDetail studentDetail = new StudentDetail();
     studentDetail.setStudent(student);
@@ -78,6 +78,16 @@ public class StudentController {
 
     model.addAttribute("studentDetail", studentDetail);
     return "editStudent";
+  }
+
+  // 更新フォームのPOST送信先URL
+  @PostMapping("/updateStudent")
+  public String updateStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result){
+    if (result.hasErrors()){
+      return "editStudent";
+    }
+    service.updateStudent(studentDetail);
+    return "redirect:/studentList";
   }
 
 

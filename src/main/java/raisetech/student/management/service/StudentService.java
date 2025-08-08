@@ -37,13 +37,12 @@ public class StudentService {
   }
 
   // 特定id取得用メソッド【受講生コース情報】
-  public List<StudentCourses> searchCoursesById(String studentId) {
+  public List<StudentCourses> searchCoursesByStudentId(String studentId) {
     return repository.searchCoursesByStudentId(studentId);
   }
 
 
   @Transactional // 登録・更新・削除したりする場合は、Service層で必ずつける！
-
   // TODO:登録用メソッド【受講生情報】
   public void registerStudent(StudentDetail studentDetail) {
     repository.registerStudent(studentDetail.getStudent());
@@ -54,6 +53,20 @@ public class StudentService {
       studentCourse.setEndDate(LocalDateTime.now().plusYears(1));
       repository.registerStudentCourses(studentCourse);
     }
+  }
+
+  @Transactional
+  // TODO:更新用メソッド【受講生情報】
+  public void updateStudent(StudentDetail studentDetail) {
+    repository.updateStudent(studentDetail.getStudent());
+    // TODO:更新用メソッド【受講生コース情報】
+    for (StudentCourses studentCourse : studentDetail.getStudentCourses()) {
+      studentCourse.setStudentId(studentDetail.getStudent().getId());
+      studentCourse.setStartDate(LocalDateTime.now());
+      studentCourse.setEndDate(LocalDateTime.now().plusYears(1));
+      repository.updateStudentCourses(studentCourse);
+    }
+
   }
 
 }
