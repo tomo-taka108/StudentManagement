@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>受講生一覧【有効】</title>
+</head>
+<body>
+<h1>受講生情報一覧【有効】</h1>
+<table border="1">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>名前</th>
+    <th>カナ名</th>
+    <th>ニックネーム</th>
+    <th>メールアドレス</th>
+    <th>地域</th>
+    <th>年齢</th>
+    <th>性別</th>
+    <th>備考</th>
+  </tr>
+  </thead>
+  <tbody>
+  <!-- studentListから1人ずつ取り出し -->
+  <tr th:each="studentDetail: ${activeStudentList}">
+    <td th:text="${studentDetail.student.id}">ID</td>
+    <td>
+    <!-- 編集リンク：「名前」にリンクをつけ、クリックするとその受講生のIDをGETパラメータとして編集画面に飛ぶ -->
+      <a href="/studentList" th:href="@{/student/{id}(id=${studentDetail.student.id})}"
+         th:text="${studentDetail.student.name}">名前</a>
+    </td>
+    <td th:text="${studentDetail.student.kanaName}">カナ名</td>
+    <td th:text="${studentDetail.student.nickname}">ニックネーム</td>
+    <td th:text="${studentDetail.student.email}">メール</td>
+    <td th:text="${studentDetail.student.area}">地域</td>
+    <td th:text="${studentDetail.student.age}">年齢</td>
+    <td th:text="${studentDetail.student.sex}">性別</td>
+    <td th:text="${studentDetail.student.remark}">備考</td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
+
+</html>
