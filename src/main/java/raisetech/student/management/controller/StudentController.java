@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +32,7 @@ public class StudentController {
     this.converter = converter;
   }
 
+  // 全受講生の画面表示のURL
   @GetMapping("/studentList")
   public String getStudentList(Model model) {
     List<Student> students = service.searchStudentList();
@@ -40,11 +42,13 @@ public class StudentController {
     return "studentList";
   }
 
-  @GetMapping("/studentCourseList")
-  public String getCourseList(Model model) {
-    List<StudentCourses> studentCourses = service.searchStudentCoursesList();
-    model.addAttribute("studentCourseList", studentCourses);
-    return "studentCourseList";
+  // 特定idの受講生の更新フォーム画面表示のURL
+  @GetMapping("/student/{id}")
+  public String getStudent(@PathVariable String id, Model model) {
+    StudentDetail studentDetail = service.searchStudent(id);
+
+    model.addAttribute("studentDetail", studentDetail);
+    return "updateStudent";
   }
 
   // 登録フォーム画面表示のURL
@@ -66,25 +70,11 @@ public class StudentController {
     return "redirect:/studentList";
   }
 
-  // 更新フォーム画面表示のURL
-  @GetMapping("/editStudent")
-  public String editStudent(@RequestParam("id") String id, Model model) {
-    Student student = service.searchById(id);
-    List<StudentCourses> studentCourses = service.searchCoursesByStudentId(id);
-
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudent(student);
-    studentDetail.setStudentCourses(studentCourses);
-
-    model.addAttribute("studentDetail", studentDetail);
-    return "editStudent";
-  }
-
   // 更新フォームのPOST送信先URL
   @PostMapping("/updateStudent")
-  public String updateStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result){
-    if (result.hasErrors()){
-      return "editStudent";
+  public String updateStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result) {
+    if (result.hasErrors()) {
+      return "updateStudent";
     }
     service.updateStudent(studentDetail);
     return "redirect:/studentList";
