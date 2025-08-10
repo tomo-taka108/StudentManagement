@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import raisetech.student.management.controller.converter.StudentConverter;
 import raisetech.student.management.data.Student;
@@ -46,7 +47,8 @@ public class StudentController {
     return "studentCourseList";
   }
 
-  @GetMapping("/newStudent") // 登録フォーム画面表示のURL
+  // 登録フォーム画面表示のURL
+  @GetMapping("/newStudent")
   public String newStudent(Model model) {
     StudentDetail studentDetail = new StudentDetail();
     studentDetail.setStudentCourses(Arrays.asList(new StudentCourses()));
@@ -54,17 +56,37 @@ public class StudentController {
     return "registerStudent";
   }
 
-  @PostMapping("/registerStudent") // 登録フォームのPOST送信先URL
+  // 登録フォームのPOST送信先URL
+  @PostMapping("/registerStudent")
   public String registerStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result) {
     if (result.hasErrors()) {
       return "registerStudent";
     }
-
-    // 課題28①　新規受講生情報を登録する処理を実装する。→登録された受講生情報がstudentListとして画面表示されるところまで確認する。
-    // 課題28②　コース情報も一緒に登録できるように実装する。コースは単体でよい。→同様に画面表示まで確認する。
-
-    // 学生情報を登録
     service.registerStudent(studentDetail);
+    return "redirect:/studentList";
+  }
+
+  // 更新フォーム画面表示のURL
+  @GetMapping("/editStudent")
+  public String editStudent(@RequestParam("id") String id, Model model) {
+    Student student = service.searchById(id);
+    List<StudentCourses> studentCourses = service.searchCoursesByStudentId(id);
+
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(student);
+    studentDetail.setStudentCourses(studentCourses);
+
+    model.addAttribute("studentDetail", studentDetail);
+    return "editStudent";
+  }
+
+  // 更新フォームのPOST送信先URL
+  @PostMapping("/updateStudent")
+  public String updateStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result){
+    if (result.hasErrors()){
+      return "editStudent";
+    }
+    service.updateStudent(studentDetail);
     return "redirect:/studentList";
   }
 
