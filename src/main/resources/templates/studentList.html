@@ -24,7 +24,11 @@
   <!-- studentListから1人ずつ取り出し -->
   <tr th:each="studentDetail: ${studentList}">
     <td th:text="${studentDetail.student.id}">ID</td>
-    <td th:text="${studentDetail.student.name}">名前</td>
+    <td>
+    <!-- 編集リンク：「名前」にリンクをつけ、クリックするとその受講生のIDをGETパラメータとして編集画面に飛ぶ -->
+      <a href="/studentList" th:href="@{/student/{id}(id=${studentDetail.student.id})}"
+         th:text="${studentDetail.student.name}">名前</a>
+    </td>
     <td th:text="${studentDetail.student.kanaName}">カナ名</td>
     <td th:text="${studentDetail.student.nickname}">ニックネーム</td>
     <td th:text="${studentDetail.student.email}">メール</td>
@@ -32,8 +36,6 @@
     <td th:text="${studentDetail.student.age}">年齢</td>
     <td th:text="${studentDetail.student.sex}">性別</td>
     <td th:text="${studentDetail.student.remark}">備考</td>
-    <!-- 編集リンク：クリックするとその受講生のIDをGETパラメータとして編集画面に飛ぶ -->
-    <td><a th:href="@{/editStudent(id=${studentDetail.student.id})}">編集</a></td>
   </tr>
   </tbody>
 </table>
