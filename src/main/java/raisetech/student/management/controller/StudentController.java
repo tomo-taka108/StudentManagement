@@ -87,7 +87,7 @@ public class StudentController {
       return "updateStudent";
     }
     service.updateStudent(studentDetail);
-    return "redirect:/studentList";
+    return "redirect:/activeStudentList";
   }
 
 
