@@ -25,11 +25,6 @@ public class StudentService {
     return repository.search();
   }
 
-  // 有効（非削除）の一覧取得用メソッド【受講生情報】
-  public List<Student> searchActiveStudentList() {
-    return repository.searchActiveStudentList();
-  }
-
   // 一覧取得用メソッド【受講生コース情報】
   public List<StudentCourses> searchStudentCoursesList() {
     return repository.searchStudentCoursesList();
