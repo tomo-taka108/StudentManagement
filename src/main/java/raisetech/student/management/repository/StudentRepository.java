@@ -17,10 +17,14 @@ public interface StudentRepository {
 
   /**
    * 全件検索した受講生情報の一覧
+   * 有効（非削除）の受講生情報の一覧
    * 特定idの受講生情報の一覧
    */
   @Select("SELECT * FROM students")
   List<Student> search();
+
+  @Select("SELECT * FROM students WHERE isDeleted = false")
+  List<Student> searchActiveStudentList();
 
   @Select("SELECT * FROM students WHERE id = #{id}")
   Student searchStudent(String id);

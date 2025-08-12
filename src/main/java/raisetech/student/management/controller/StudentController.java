@@ -42,6 +42,16 @@ public class StudentController {
     return "studentList";
   }
 
+  // 有効（非削除）受講生の画面表示のURL
+  @GetMapping("/activeStudentList")
+  public String getActiveStudentList(Model model) {
+    List<Student> students = service.searchActiveStudentList();
+    List<StudentCourses> studentCourses = service.searchStudentCoursesList();
+
+    model.addAttribute("activeStudentList", converter.convertstudentdetails(students, studentCourses));
+    return "activeStudentList";
+  }
+
   // 特定idの受講生の更新フォーム画面表示のURL
   @GetMapping("/student/{id}")
   public String getStudent(@PathVariable String id, Model model) {
@@ -77,7 +87,7 @@ public class StudentController {
       return "updateStudent";
     }
     service.updateStudent(studentDetail);
-    return "redirect:/studentList";
+    return "redirect:/activeStudentList";
   }
 
 

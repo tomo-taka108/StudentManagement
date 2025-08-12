@@ -56,6 +56,12 @@
              th:field="*{studentCourses[__${stat.index}__].courseName}"/>
   </div>
 
+  <!-- isiDeletedの削除フラグを追加 -->
+  <div>
+    　　<label for="isDeleted">削除済み？:</label>
+    　　<input type="checkbox" id="isDeleted" th:field="*{student.isDeleted}" /><br>
+  </div>
+
   <div>
     <button type="submit">更新</button>
   </div>
