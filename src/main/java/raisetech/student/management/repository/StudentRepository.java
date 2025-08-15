@@ -10,29 +10,42 @@ import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourses;
 
 /**
- * 受講生情報を扱うリポジトリ。 全件検索や単一条件での検索、コース情報の検索が行えるクラスです。
+ * 受講生テーブルと受講生コース情報テーブルに紐づくRepositoryです。
  */
 @Mapper
 public interface StudentRepository {
 
   /**
-   * 全件検索した受講生情報の一覧
-   * 有効（非削除）の受講生情報の一覧
-   * 特定idの受講生情報の一覧
+   * 受講生の全件検索を行います。
+   *
+   * @return 受講生一覧（全件）
    */
   @Select("SELECT * FROM students")
   List<Student> search();
 
+  /**
+   * IDに紐づく受講生の検索を行います。
+   *
+   * @param id 受講生ID
+   * @return 受講生
+   */
   @Select("SELECT * FROM students WHERE id = #{id}")
   Student searchStudent(String id);
 
   /**
-   * 全件検索した受講生コース情報の一覧
-   * 特定idの受講生コース情報の一覧
+   * 受講生コース情報を全件検索を行います。
+   *
+   * @return 受講生のコース情報（全件）
    */
   @Select("SELECT * FROM student_courses")
   List<StudentCourses> searchStudentCoursesList();
 
+  /**
+   * 受講生IDに紐づく受講生コース情報の検索を行います。
+   *
+   * @param studentId 受講生ID
+   * @return 受講生IDに紐づく受講生コース情報
+   */
   @Select("SELECT * FROM student_courses WHERE student_id = #{studentId}")
   List<StudentCourses> searchStudentCourses(String studentId);
 
