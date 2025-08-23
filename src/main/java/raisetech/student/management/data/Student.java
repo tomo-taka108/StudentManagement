@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Range;
 
 @Getter
 @Setter
@@ -17,25 +18,26 @@ public class Student {
   @Pattern(regexp = "^\\d+$")
   private String id;
 
-  @NotBlank
+  @NotBlank(message = "【name】入力が必要です。")
   private String name;
 
-  @NotBlank
+  @NotBlank(message = "【kanaName】入力が必要です。")
   private String kanaName;
 
-  @NotBlank
+  @NotBlank(message = "【nickname】入力が必要です。")
   private String nickname;
 
-  @NotBlank
-  @Email
+  @NotBlank(message = "【email】入力が必要です。")
+  @Email(message = "メールアドレスの形式が誤っています。")
   private String email;
 
-  @NotBlank
+  @NotBlank(message = "【area】入力が必要です。")
   private String area;
 
+  @Range(min = 0, max = 150, message = "【age】0～150までの値を入力してください。")
   private int age;
 
-  @NotBlank
+  @NotBlank(message = "【sex】入力が必要です。")
   private String sex;
 
   private String remark;

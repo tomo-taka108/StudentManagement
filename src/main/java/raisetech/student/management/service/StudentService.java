@@ -43,17 +43,17 @@ public class StudentService {
    *
    * @param id 受講生ID
    * @return 受講生詳細
-   * @throws StudentNotFoundException 指定されたIDの学生が見つからない場合
+   * @throws StudentNotFoundException 指定されたIDの受講生が見つからない場合
    */
   public StudentDetail searchStudent(String id) {
     Student student = repository.searchStudent(id);
 
-    // 学生が存在しなければ StudentNotFoundException を投げる
+    // 受講生が存在しなければ StudentNotFoundException を投げる
     if (student == null) {
-      throw new StudentNotFoundException("ID: " + id + " の学生が見つかりません。");
+      throw new StudentNotFoundException("ID: " + id + " の受講生が見つかりません。");
     }
 
-    // 学生が存在すればコース情報を取得
+    // 受講生が存在すればコース情報を取得
     List<StudentCourse> studentCourse = repository.searchStudentCourse(student.getId());
     return new StudentDetail(student, studentCourse);
   }
