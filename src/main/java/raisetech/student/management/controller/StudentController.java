@@ -1,5 +1,10 @@
 package raisetech.student.management.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -14,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import raisetech.student.management.domain.StudentDetail;
+import raisetech.student.management.exception.ErrorResponse;
 import raisetech.student.management.service.StudentService;
 
 /**
@@ -35,6 +41,17 @@ public class StudentController {
    *
    * @return 受講生詳細一覧（全件）
    */
+  @Operation(
+      summary = "受講生一覧の検索",
+      description = "受講生詳細の一覧を検索します。全件検索を行うので、条件指定は行いません。",
+      responses = {
+          @ApiResponse(
+              content = @Content(
+                  mediaType = "application/json",
+                  array = @ArraySchema(schema = @Schema(implementation = StudentDetail.class))
+              )
+          )}
+  )
   @GetMapping("/studentList")
   public List<StudentDetail> getStudentList() {
     return service.searchStudentList();
@@ -46,6 +63,33 @@ public class StudentController {
    * @param id 受講生ID
    * @return 受講生【単一】
    */
+  @Operation(
+      summary = "受講生の検索",
+      description = "パスで指定されたIDに該当する受講生詳細を検索します。IDに紐づく受講生が存在しない場合はエラーメッセージを返します。",
+      responses = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "検索成功",
+              content = @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = StudentDetail.class)
+              )),
+          @ApiResponse(
+              responseCode = "400",
+              description = "IDの入力形式が誤っていた際のバリデーションエラー",
+              content = @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = ErrorResponse.class)
+              )),
+          @ApiResponse(
+              responseCode = "404",
+              description = "指定されたIDの受講生が存在しない場合のエラー",
+              content = @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = ErrorResponse.class)
+              ))
+      }
+  )
   @GetMapping("/student/{id}")
   public StudentDetail getStudent(
       @PathVariable
@@ -61,6 +105,26 @@ public class StudentController {
    * @param studentDetail 受講生詳細
    * @return 実行結果
    */
+  @Operation(
+      summary = "受講生の登録",
+      description = "受講生情報の新規登録を行います。登録内容に不備があればエラーメッセージを返します",
+      responses = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "登録成功",
+              content = @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = StudentDetail.class)
+              )),
+          @ApiResponse(
+              responseCode = "400",
+              description = "入力内容のバリデーションエラー",
+              content = @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = ErrorResponse.class)
+              ))
+      }
+  )
   @PostMapping("/registerStudent")
   public ResponseEntity<StudentDetail> registerStudent(
       @RequestBody @Valid StudentDetail studentDetail) {
@@ -74,6 +138,26 @@ public class StudentController {
    * @param studentDetail 受講生詳細
    * @return 実行結果
    */
+  @Operation(
+      summary = "受講生の更新",
+      description = "受講生情報の更新を行います。更新内容に不備があればエラーメッセージを返します。",
+      responses = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "更新成功",
+              content = @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = StudentDetail.class)
+              )),
+          @ApiResponse(
+              responseCode = "400",
+              description = "入力内容のバリデーションエラー",
+              content = @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = ErrorResponse.class)
+              ))
+      }
+  )
   @PutMapping("/updateStudent")
   public ResponseEntity<String> updateStudent(
       @RequestBody @Valid StudentDetail studentDetail) {

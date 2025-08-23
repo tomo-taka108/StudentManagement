@@ -68,9 +68,9 @@ public class StudentService {
   public StudentDetail registerStudent(StudentDetail studentDetail) {
     Student student = studentDetail.getStudent();
 
-    // TODO:登録用メソッド【受講生情報】
+    // 登録用メソッド【受講生情報】
     repository.registerStudent(student);
-    // TODO:登録用メソッド【受講生コース情報】
+    // 登録用メソッド【受講生コース情報】
     studentDetail.getStudentCourseList().forEach(studentCourse -> {
       initStudentCourse(studentCourse, student);
       repository.registerStudentCourse(studentCourse);
@@ -98,10 +98,10 @@ public class StudentService {
    * @param studentDetail
    */
   @Transactional // 登録・更新・削除したりする場合は、Service層で必ずつける！
-  // TODO:更新用メソッド【受講生情報】
+  // 更新用メソッド【受講生情報】
   public void updateStudent(StudentDetail studentDetail) {
     repository.updateStudent(studentDetail.getStudent());
-    // TODO:更新用メソッド【受講生コース情報】
+    // 更新用メソッド【受講生コース情報】
     studentDetail.getStudentCourseList()
         .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
   }
