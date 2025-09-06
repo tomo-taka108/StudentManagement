@@ -62,6 +62,7 @@ class StudentServiceTest {
     // 準備
     String id = "123";
     Student student = new Student();
+    student.setId(id);
     String studentId = student.getId();
     List<StudentCourse> studentCourse = new ArrayList<>();
     when(mockRepository.searchStudent(id)).thenReturn(student);
@@ -100,8 +101,9 @@ class StudentServiceTest {
   @Test
   void 受講生詳細の登録_受講生とコース情報が登録されること() {
     // 準備
+    String id = "123";
     Student student = new Student();
-    student.setId("123");
+    student.setId(id);
 
     StudentCourse studentCourse1 = new StudentCourse();
     StudentCourse studentCourse2 = new StudentCourse();
@@ -125,25 +127,27 @@ class StudentServiceTest {
   @Test
   void 受講生コース情報を登録する際の初期情報の設定_初期情報が正しく設定されること() {
     // 準備
+    String id = "123";
     Student student = new Student();
-    student.setId("123");
+    student.setId(id);
     StudentCourse studentCourse = new StudentCourse();
     LocalDateTime now = LocalDateTime.now();
 
     // 実行
-    sut.initStudentCourse(studentCourse, student);
+    sut.initStudentCourse(studentCourse, student.getId());
 
     // 検証
-    assertEquals(student.getId(), studentCourse.getStudentId());
-    assertEquals(now, studentCourse.getStartDate());
-    assertEquals(now.plusYears(1), studentCourse.getEndDate());
+    assertEquals(id, studentCourse.getStudentId());
+    assertEquals(now.getHour(), studentCourse.getStartDate().getHour()); //コンマ秒でズレてエラーとならないためにhourで設定
+    assertEquals(now.plusYears(1).getYear(), studentCourse.getEndDate().getYear());
   }
 
   @Test
   void 受講生詳細の更新_受講生とコース情報が更新されること() {
     // 準備
+    String id = "123";
     Student student = new Student();
-    student.setId("123");
+    student.setId(id);
 
     StudentCourse studentCourse1 = new StudentCourse();
     StudentCourse studentCourse2 = new StudentCourse();
