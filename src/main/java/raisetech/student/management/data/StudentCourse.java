@@ -3,12 +3,16 @@ package raisetech.student.management.data;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Schema(description = "受講生コース情報を表すデータモデル")
 @Getter
 @Setter
+@NoArgsConstructor // 引数なしコンストラクタを自動生成
+@AllArgsConstructor // 全フィールドを引数に持つコンストラクタを自動生成
 
 public class StudentCourse {
 

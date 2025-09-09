@@ -13,8 +13,8 @@ import raisetech.student.management.data.StudentCourse;
 @Schema(description = "受講生詳細（受講生情報およびコース情報）を表すデータモデル")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor // 引数なしコンストラクタを自動生成
+@AllArgsConstructor // 全フィールドを引数に持つコンストラクタを自動生成
 public class StudentDetail {
 
   @Valid // StudentクラスのValidationアノテーションを有効化する

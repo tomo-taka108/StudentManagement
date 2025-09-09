@@ -8,13 +8,17 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
 
 @Schema(description = "受講生を表すデータモデル")
 @Getter
 @Setter
+@NoArgsConstructor // 引数なしコンストラクタを自動生成
+@AllArgsConstructor // 全フィールドを引数に持つコンストラクタを自動生成
 
 public class Student {
 

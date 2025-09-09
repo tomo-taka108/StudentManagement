@@ -41,15 +41,16 @@ class StudentControllerTest {
   private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
   @Test
-  public void 受講生詳細の一覧検索が実行てきて空のリストが返ってくること() throws Exception {
+  public void 受講生詳細の一覧検索が実行できて空のリストが返ってくること() throws Exception {
     mockMvc.perform(get("/studentList"))
-        .andExpect(status().isOk());
+        .andExpect(status().isOk())
+        .andExpect(content().json("[]"));
 
     verify(service, times(1)).searchStudentList();
   }
 
   @Test
-  public void 受講生詳細の検索が実行できて空のリストが返ってくること() throws Exception {
+  public void 受講生詳細の検索が実行できること() throws Exception {
     String id = "123";
     mockMvc.perform(get("/student/{id}", id))
         .andExpect(status().isOk());
@@ -59,15 +60,17 @@ class StudentControllerTest {
 
   @Test
   void 受講生詳細の受講生で適切な値を入力した時に入力チェックに異常が発生しないこと() {
-    Student student = new Student();
-    student.setId("1");
-    student.setName("佐藤太郎");
-    student.setKanaName("サトウタロウ");
-    student.setNickname("タロちゃん");
-    student.setEmail("taro.sato@exapmle.com");
-    student.setArea("東京");
-    student.setAge(18);
-    student.setSex("男性");
+    Student student = new Student(
+        "1",
+        "佐藤太郎",
+        "サトウタロウ",
+        "タロちゃん",
+        "taro.sato@exapmle.com",
+        "東京",
+        18,
+        "男性",
+        null,
+        false);
 
     Set<ConstraintViolation<Student>> violations = validator.validate(student);
 
@@ -76,15 +79,17 @@ class StudentControllerTest {
 
   @Test
   void 受講生詳細の受講生でIDに数字以外を用いた時に入力チェックに掛かること() {
-    Student student = new Student();
-    student.setId("テストです。");
-    student.setName("佐藤太郎");
-    student.setKanaName("サトウタロウ");
-    student.setNickname("タロちゃん");
-    student.setEmail("taro.sato@exapmle.com");
-    student.setArea("東京");
-    student.setAge(18);
-    student.setSex("男性");
+    Student student = new Student(
+        "テストです",
+        "佐藤太郎",
+        "サトウタロウ",
+        "タロちゃん",
+        "taro.sato@exapmle.com",
+        "東京",
+        18,
+        "男性",
+        null,
+        false);
 
     Set<ConstraintViolation<Student>> violations = validator.validate(student);
 
