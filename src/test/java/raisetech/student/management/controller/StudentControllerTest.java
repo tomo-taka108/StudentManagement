@@ -126,7 +126,10 @@ class StudentControllerTest {
   }
 
   @Test
-  void 受講生詳細の登録が実行できてサービスが呼ばれること() throws Exception {
+  void 受講生詳細の登録が実行できて空で返ってくること() throws Exception {
+    // リクエストデータは適切に構築して入力チェックの検証も兼ねている。
+    // 本来であれば返りは登録されたデータが入るが、モック化すると意味がないため、レスポンスは作らない。
+
     // ダミーのリクエストJSON
     String requestJson = """
         {
@@ -148,21 +151,19 @@ class StudentControllerTest {
          }
         """;
 
-    // Serviceの戻り値をモック化
-    StudentDetail studentDetail = new StudentDetail();
-    when(service.registerStudent(any(StudentDetail.class))).thenReturn(studentDetail);
-
     // POSTリクエストを実行
     mockMvc.perform(post("/registerStudent")
             .contentType(String.valueOf(APPLICATION_JSON)) // リクエストがJSON形式であることを指定
             .content(requestJson))                                   // 実際に送るJSONデータ
         .andExpect(status().isOk());
 
-    verify(service, times(1)).registerStudent(any(StudentDetail.class));
+    verify(service, times(1)).registerStudent(any());
   }
 
   @Test
-  void 受講生詳細の更新が実行できてサービスが呼ばれること() throws Exception {
+  void 受講生詳細の更新が実行できて空で返ってくること() throws Exception {
+    // リクエストデータは適切に構築して入力チェックの検証も兼ねている。
+
     // ダミーのリクエストJSON
     String requestJson = """
         {
@@ -180,7 +181,11 @@ class StudentControllerTest {
              },
              "studentCourseList":[
                  {
-                     "courseName":"Java応用"
+                     "id":"150",
+                     "studentId":"123",
+                     "courseName":"Java応用",
+                     "startDate":"2025-04-01T00:00:00.000000",
+                     "endDate":"2025-09-30T00:00:00.000000"
                  }
              ]
          }
@@ -192,7 +197,7 @@ class StudentControllerTest {
             .content(requestJson))                                   // 実際に送るJSONデータ
         .andExpect(status().isOk());
 
-    verify(service, times(1)).updateStudent(any(StudentDetail.class));
+    verify(service, times(1)).updateStudent(any());
   }
 
 }
