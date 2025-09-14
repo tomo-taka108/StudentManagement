@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import raisetech.student.management.data.Student;
@@ -24,11 +26,26 @@ class StudentRepositoryTest {
     assertThat(result.size()).isEqualTo(5);
   }
 
+  @ParameterizedTest
+  @ValueSource(strings = {"1", "2", "3", "4", "5"})
+    // searchStudent(String id)
+  void IDに紐づく受講生の検索が行えること(String id) {
+    Student result = sut.searchStudent(id);
+
+    switch (id) {
+      case "1" -> assertThat(result.getName()).isEqualTo("佐藤 太郎");
+      case "2" -> assertThat(result.getName()).isEqualTo("鈴木 花子");
+      case "3" -> assertThat(result.getName()).isEqualTo("田中 一郎");
+      case "4" -> assertThat(result.getName()).isEqualTo("高橋 美咲");
+      case "5" -> assertThat(result.getName()).isEqualTo("山本 大輔");
+    }
+  }
+
   @Test
     // searchStudent(String id)
-  void IDに紐づく受講生の検索が行えること() {
-    Student result = sut.searchStudent("3");
-    assertThat(result.getName()).isEqualTo("田中 一郎");
+  void 登録されていないIDの受講生検索が行えないこと() {
+    Student result = sut.searchStudent("6");
+    assertThat(result).isNull();
   }
 
   @Test
@@ -38,13 +55,34 @@ class StudentRepositoryTest {
     assertThat(result.size()).isEqualTo(8);
   }
 
-  @Test
+  @ParameterizedTest
+  @ValueSource(strings = {"1", "2", "3", "4", "5"})
     // searchStudentCourse(String studentId)
-  void 受講生IDに紐づく受講生コース情報の検索が行えること() {
-    List<StudentCourse> result = sut.searchStudentCourse("3");
-    assertThat(result.size()).isEqualTo(2);
-    assertThat(result.get(0).getCourseName()).isEqualTo("データベース基礎");
-    assertThat(result.get(1).getCourseName()).isEqualTo("Python超入門");
+  void 受講生IDに紐づく受講生コース情報の検索が行えること(String studentId) {
+    List<StudentCourse> result = sut.searchStudentCourse(studentId);
+
+    switch (studentId) {
+      case "1" -> {
+        assertThat(result.get(0).getCourseName()).isEqualTo("Java入門");
+        assertThat(result.get(1).getCourseName()).isEqualTo("Spring Boot実践");
+      }
+      case "2" -> assertThat(result.get(0).getCourseName()).isEqualTo("Java入門");
+      case "3" -> {
+        assertThat(result.get(0).getCourseName()).isEqualTo("データベース基礎");
+        assertThat(result.get(1).getCourseName()).isEqualTo("Python超入門");
+      }
+      case "4" -> assertThat(result.get(0).getCourseName()).isEqualTo("データベース基礎");
+      case "5" -> {
+        assertThat(result.get(0).getCourseName()).isEqualTo("ネットワーク基礎");
+        assertThat(result.get(1).getCourseName()).isEqualTo("Java応用");
+      }
+    }
+  }
+
+  @Test // searchStudentCourse(String studentId)
+  void 登録されていない受講生IDで受講生コース情報の検索が行えないこと(){
+    List<StudentCourse> result = sut.searchStudentCourse("6");
+    assertThat(result).isEmpty();
   }
 
   @Test
