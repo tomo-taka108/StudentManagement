@@ -25,9 +25,19 @@
   SELECT * FROM student_courses
   </select>
 
-  <!-- 受講生コース情報（ID紐づき）を検索 -->
+  <!-- 受講生コース情報（受講生ID紐づき）を検索 -->
   <select id="searchStudentCourse" resultType="raisetech.student.management.data.StudentCourse">
   SELECT * FROM student_courses WHERE student_id = #{studentId}
+  </select>
+
+  <!-- コース申込状況（全件）を検索 -->
+  <select id="searchCourseStatusList" resultType="raisetech.student.management.data.CourseStatus">
+    SELECT * FROM course_status
+  </select>
+
+  <!-- コース申込状況（コースID紐づき）を検索 -->
+  <select id="searchCourseStatus" resultType="raisetech.student.management.data.CourseStatus">
+    SELECT * FROM course_status WHERE course_id = #{courseId}
   </select>
 
   <!-- 受講生を新規登録 -->
@@ -42,6 +52,12 @@
   VALUES(#{studentId},#{courseName},#{startDate},#{endDate})
   </insert>
 
+  <!-- コース申込状況を新規登録 -->
+  <insert id="registerCourseStatus" parameterType="raisetech.student.management.data.CourseStatus" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO course_status(course_id,student_id,status)
+    VALUES(#{courseId},#{studentId},#{status})
+  </insert>
+
   <!-- 受講生を更新 -->
   <update id="updateStudent" parameterType="raisetech.student.management.data.Student">
   UPDATE students
@@ -54,6 +70,13 @@
   UPDATE student_courses
   SET course_name = #{courseName}
   WHERE id = #{id}
+  </update>
+
+  <!-- コース申込状況を更新 -->
+  <update id="updateCourseStatus" parameterType="raisetech.student.management.data.CourseStatus">
+    UPDATE course_status
+    SET status = #{status}
+    WHERE id = #{id}
   </update>
 
 

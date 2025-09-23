@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
 import raisetech.student.management.domain.StudentDetail;
@@ -38,6 +39,7 @@ class StudentControllerTest {
   @MockitoBean
   private StudentService service;
 
+  // 入力チェック（バリデーションテスト）に必要
   private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
   @Test
@@ -109,6 +111,16 @@ class StudentControllerTest {
   }
 
   @Test
+  void コース申込状況で適切な値を入力した時に入力チェックに異常が発生しないこと() {
+    CourseStatus courseStatus = new CourseStatus();
+    courseStatus.setStatus("本申込");
+
+    Set<ConstraintViolation<CourseStatus>> violations = validator.validate(courseStatus);
+
+    assertThat(violations.size()).isEqualTo(0);
+  }
+
+  @Test
   void 受講生詳細の検索で存在しないIDを指定した時に404エラーが返ってくること() throws Exception {
     // 存在しないIDを準備
     String id = "9999";
@@ -147,6 +159,11 @@ class StudentControllerTest {
                  {
                      "courseName":"Java応用"
                  }
+             ],
+             "courseStatusList":[
+                  {
+                      "status":"受講中"
+                  }
              ]
          }
         """;
@@ -181,11 +198,14 @@ class StudentControllerTest {
              },
              "studentCourseList":[
                  {
-                     "id":"150",
-                     "studentId":"123",
-                     "courseName":"Java応用",
-                     "startDate":"2025-04-01T00:00:00.000000",
-                     "endDate":"2025-09-30T00:00:00.000000"
+                     "id":"11",
+                     "courseName":"Java応用"
+                 }
+             ],
+             "courseStatusList":[
+                 {
+                     "id":"21",
+                     "status":"受講終了"
                  }
              ]
          }

@@ -1,11 +1,14 @@
 package raisetech.student.management.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raisetech.student.management.controller.converter.StudentConverter;
+import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
 import raisetech.student.management.domain.StudentDetail;
@@ -28,18 +31,19 @@ public class StudentService {
   }
 
   /**
-   * 受講生詳細の一覧検索です。 全件検索を行うので、条件指定は行いません。
+   * 受講生詳細の一覧検索です。全件検索を行うので、条件指定は行いません。
    *
    * @return 受講生詳細一覧（全件）
    */
   public List<StudentDetail> searchStudentList() {
     List<Student> studentList = repository.search();
     List<StudentCourse> studentCourseList = repository.searchStudentCourseList();
-    return converter.convertStudentDetails(studentList, studentCourseList);
+    List<CourseStatus> courseStatusList = repository.searchCourseStatusList();
+    return converter.convertStudentDetails(studentList, studentCourseList, courseStatusList);
   }
 
   /**
-   * 受講生詳細の検索です。 IDに紐づく任意の受講生の情報を取得し、その受講生に紐づく受講生コース情報を取得して設定します。
+   * 受講生詳細の検索です。IDに紐づく任意の受講生の情報を取得し、その受講生に紐づく受講生コース情報およびコース申込状況を取得して設定します。
    *
    * @param id 受講生ID
    * @return 受講生詳細
@@ -53,13 +57,26 @@ public class StudentService {
       throw new StudentNotFoundException("ID: " + id + " の受講生が見つかりません。");
     }
 
-    // 受講生が存在すればコース情報を取得
+    // 受講生が存在すればコース情報およびコース申込状況を取得
     List<StudentCourse> studentCourse = repository.searchStudentCourse(student.getId());
-    return new StudentDetail(student, studentCourse);
+
+    List<String> courseId = studentCourse.stream()
+        .map(StudentCourse::getId)
+        .toList();
+
+    List<CourseStatus> courseStatus = new ArrayList<>();
+
+    for (String matchId : courseId) {
+      List<CourseStatus> status = repository.searchCourseStatus(matchId);
+      courseStatus.addAll(status);
+    }
+
+    return new StudentDetail(student, studentCourse, courseStatus);
   }
 
   /**
-   * 受講生詳細の登録を行います。 受講生と受講生コース情報を個別に登録し、受講生コース情報には受講生情報を紐づける値とコース開始日、コース終了日を設定します。
+   * 受講生詳細の登録を行います。 受講生と受講生コース情報、コース申込状況を個別に登録し、受講生コース情報には受講生ID紐づけとコース開始日、コース終了日を設定します。
+   * コース申込状況は、受講生IDとコース情報IDを各々紐づけの設定をします。
    *
    * @param studentDetail 受講生詳細
    * @return 登録情報を付与した受講生詳細
@@ -68,34 +85,62 @@ public class StudentService {
   public StudentDetail registerStudent(StudentDetail studentDetail) {
     Student student = studentDetail.getStudent();
 
-    // 登録用メソッド【受講生情報】
+    List<StudentCourse> studentCourseList = studentDetail.getStudentCourseList();
+    List<CourseStatus> courseStatusList = studentDetail.getCourseStatusList();
+
+    // ★ バリデーション: コース数と申込状況数が一致しない場合はエラー
+    if (studentCourseList.size() != courseStatusList.size()) {
+      throw new IllegalArgumentException("コース数とコース申込状況の数が一致しません。");
+    }
+
+    // 受講生の登録
     repository.registerStudent(student);
-    // 登録用メソッド【受講生コース情報】
-    studentDetail.getStudentCourseList().forEach(studentCourse -> {
-      initStudentCourse(studentCourse, student.getId());
-      repository.registerStudentCourse(studentCourse);
-    });
+
+    // 受講生コース情報とコース申込状況を登録
+    for (int i = 0; i < studentCourseList.size(); i++) {
+      StudentCourse course = studentCourseList.get(i);
+      CourseStatus status = courseStatusList.get(i);
+
+      initStudentCourse(course, student);
+      repository.registerStudentCourse(course);
+
+      initCourseStatus(status, student, course);
+      repository.registerCourseStatus(status);
+    }
+
     return studentDetail;
   }
 
   /**
    * 受講生コース情報を登録する際の初期情報を設定する。
    *
-   * @param studentCourse 受講生コース情報
-   * @param id       受講生
+   * @param course  受講生コース情報
+   * @param student 受講生
    */
-  void initStudentCourse(StudentCourse studentCourse, String id) {
-    LocalDateTime now = LocalDateTime.now();
+  void initStudentCourse(StudentCourse course, Student student) {
+    LocalDate now = LocalDate.now();
 
-    studentCourse.setStudentId(id);
-    studentCourse.setStartDate(now);
-    studentCourse.setEndDate(now.plusYears(1));
+    course.setStudentId(student.getId());
+    course.setStartDate(now);
+    course.setEndDate(now.plusYears(1));
   }
 
   /**
-   * 受講生詳細の更新を行います。受講生の情報と受講生コース情報をそれぞれ更新します。
+   * コース申込状況を登録する際の初期情報を設定する。
    *
-   * @param studentDetail
+   * @param status  コース申込状況
+   * @param student 受講生
+   * @param course  受講生コース情報
+   */
+  void initCourseStatus(CourseStatus status, Student student, StudentCourse course) {
+    status.setCourseId(course.getId());
+    status.setStudentId(student.getId());
+  }
+
+  /**
+   * 受講生詳細の更新を行います。受講生の情報と受講生コース情報、コース申込状況をそれぞれ更新します。
+   *
+   * @param studentDetail 受講生詳細
    */
   @Transactional // 登録・更新・削除したりする場合は、Service層で必ずつける！
   // 更新用メソッド【受講生情報】
@@ -104,6 +149,9 @@ public class StudentService {
     // 更新用メソッド【受講生コース情報】
     studentDetail.getStudentCourseList()
         .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
+    // 更新用メソッド【コース申込状況情】
+    studentDetail.getCourseStatusList()
+        .forEach(courseStatus -> repository.updateCourseStatus(courseStatus));
   }
 
 }

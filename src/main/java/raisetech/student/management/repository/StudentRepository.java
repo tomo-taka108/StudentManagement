@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
 
@@ -31,7 +32,7 @@ public interface StudentRepository {
   Student searchStudent(String id);
 
   /**
-   * 受講生コース情報を全件検索を行います。
+   * 受講生コース情報の全件検索を行います。
    *
    * @return 受講生のコース情報（全件）
    */
@@ -44,6 +45,22 @@ public interface StudentRepository {
    * @return 受講生IDに紐づく受講生コース情報
    */
   List<StudentCourse> searchStudentCourse(String studentId);
+
+
+  /**
+   * コース申込状況の全件検索を行います。
+   *
+   * @return コース申込状況（全件）
+   */
+  List<CourseStatus> searchCourseStatusList();
+
+  /**
+   * コースIDに紐づくコース申込状況の検索を行います。
+   *
+   * @param courseId コースID
+   * @return コースIDに紐づくコース申込状況
+   */
+  List<CourseStatus> searchCourseStatus(String courseId);
 
   /**
    * 受講生を新規登録します。* IDに関しては自動採番を行う。
@@ -60,6 +77,13 @@ public interface StudentRepository {
   void registerStudentCourse(StudentCourse studentCourse);
 
   /**
+   * コース申込状況を新規登録します。IDに関しては自動採番を行う。
+   *
+   * @param courseStatus コース申込状況
+   */
+  void registerCourseStatus(CourseStatus courseStatus);
+
+  /**
    * 受講生を更新します。
    *
    * @param student 受講生
@@ -72,5 +96,12 @@ public interface StudentRepository {
    * @param studentCourse 受講生コース情報
    */
   void updateStudentCourse(StudentCourse studentCourse);
+
+  /**
+   * コース申込状況を更新します。
+   *
+   * @param courseStatus コース申込状況
+   */
+  void updateCourseStatus(CourseStatus courseStatus);
 
 }

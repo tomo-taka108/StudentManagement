@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
 
@@ -22,4 +23,7 @@ public class StudentDetail {
 
   @Valid // StudentCourseクラスのValidationアノテーションを有効化する
   private List<StudentCourse> studentCourseList;
+
+  @Valid // CourseStatusクラスのValidationアノテーションを有効化する
+  private List<CourseStatus> courseStatusList;
 }
