@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,19 +59,19 @@ public class StudentService {
       throw new StudentNotFoundException("ID: " + id + " の受講生が見つかりません。");
     }
 
-    // 受講生が存在すればコース情報およびコース申込状況を取得
+    // 受講生が存在すればコース情報を取得
     List<StudentCourse> studentCourse = repository.searchStudentCourse(student.getId());
 
-    List<String> courseId = studentCourse.stream()
+    // 受講生が存在すればコース申込状況を取得
+    List<CourseStatus> allCourseStatusList = repository.searchCourseStatusList();
+
+    Set<String> courseIds = studentCourse.stream()
         .map(StudentCourse::getId)
+        .collect(Collectors.toSet());
+
+    List<CourseStatus> courseStatus = allCourseStatusList.stream()
+        .filter(status -> courseIds.contains(status.getCourseId()))
         .toList();
-
-    List<CourseStatus> courseStatus = new ArrayList<>();
-
-    for (String matchId : courseId) {
-      List<CourseStatus> status = repository.searchCourseStatus(matchId);
-      courseStatus.addAll(status);
-    }
 
     return new StudentDetail(student, studentCourse, courseStatus);
   }
