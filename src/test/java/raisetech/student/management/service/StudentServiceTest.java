@@ -76,14 +76,13 @@ class StudentServiceTest {
     // CourseStatusを準備
     CourseStatus status1 = new CourseStatus();
     status1.setId("51");
-    status1.setCourseId("11");
     status1.setStatus("本申込");
     List<CourseStatus> courseStatusList = List.of(status1);
 
     // モックの戻り値を設定
     when(mockRepository.searchStudent(id)).thenReturn(student);
     when(mockRepository.searchStudentCourse(id)).thenReturn(studentCourseList);
-    when(mockRepository.searchCourseStatus("11")).thenReturn(courseStatusList);
+    when(mockRepository.searchCourseStatusList()).thenReturn(courseStatusList);
 
     // 実行
     StudentDetail result = sut.searchStudent(id);
@@ -97,7 +96,7 @@ class StudentServiceTest {
     // リポジトリが正しく呼ばれたかを検証
     verify(mockRepository, times(1)).searchStudent(id);
     verify(mockRepository, times(1)).searchStudentCourse(id);
-    verify(mockRepository, times(1)).searchCourseStatus("11");
+    verify(mockRepository, times(1)).searchCourseStatusList();
   }
 
   @Test
@@ -116,7 +115,7 @@ class StudentServiceTest {
 
     verify(mockRepository, times(1)).searchStudent(id);
     verify(mockRepository, never()).searchStudentCourse(anyString());
-    verify(mockRepository, never()).searchCourseStatus(anyString());
+    verify(mockRepository, never()).searchCourseStatusList();
   }
 
   @Test
@@ -128,14 +127,16 @@ class StudentServiceTest {
 
     // コースを2件用意
     StudentCourse studentCourse1 = new StudentCourse();
-    studentCourse1.setId("11");
+    studentCourse1.setCourseId("101");
     StudentCourse studentCourse2 = new StudentCourse();
-    studentCourse2.setId("12");
+    studentCourse2.setCourseId("102");
     List<StudentCourse> studentCourseList = List.of(studentCourse1, studentCourse2);
 
     // 各コースに紐づく申込状況を用意
     CourseStatus status1 = new CourseStatus();
+    status1.setCourseId("101");
     CourseStatus status2 = new CourseStatus();
+    status2.setCourseId("102");
     List<CourseStatus> courseStatusList = List.of(status1, status2);
 
     StudentDetail studentDetail = new StudentDetail(student, studentCourseList, courseStatusList);
@@ -157,10 +158,10 @@ class StudentServiceTest {
     // ⑤初期化処理が行われていることを確認（IDの紐づけなど）
     assertEquals(id, studentCourse1.getStudentId());
     assertEquals(id, studentCourse2.getStudentId());
-    assertEquals("11", status1.getCourseId());
-    assertEquals("12", status2.getCourseId());
     assertEquals(id, status1.getStudentId());
     assertEquals(id, status2.getStudentId());
+    assertEquals("101", status1.getCourseId());
+    assertEquals("102", status2.getCourseId());
   }
 
   @Test
@@ -185,13 +186,13 @@ class StudentServiceTest {
   void コース申込状況を登録する際の初期情報の設定_初期情報が正しく設定されること() {
     // 準備
     String studentId = "123";
-    String courseId = "456";
+    String courseId = "101";
 
     Student student = new Student();
     student.setId(studentId);
 
     StudentCourse studentCourse = new StudentCourse();
-    studentCourse.setId(courseId);
+    studentCourse.setCourseId(courseId);
 
     CourseStatus courseStatus = new CourseStatus();
 

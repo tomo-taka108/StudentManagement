@@ -15,6 +15,7 @@ CREATE TABLE students (
 CREATE TABLE student_courses (
     id int AUTO_INCREMENT,
     student_id int NOT NULL,
+    course_id int NOT NULL,
     course_name varchar(50) NOT NULL,
     start_date date DEFAULT NULL,
     end_date date DEFAULT NULL,
@@ -24,10 +25,9 @@ CREATE TABLE student_courses (
 
 CREATE TABLE course_status (
     id int AUTO_INCREMENT,
-    course_id int NOT NULL,
     student_id int NOT NULL,
+    course_id int NOT NULL,
     status enum('仮申込','本申込','受講中','受講終了'),
     PRIMARY KEY (id),
-    FOREIGN KEY (course_id) REFERENCES student_courses(id),
     FOREIGN KEY (student_id) REFERENCES students(id)
   );

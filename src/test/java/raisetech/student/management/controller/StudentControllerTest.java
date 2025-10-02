@@ -103,6 +103,7 @@ class StudentControllerTest {
   @Test
   void 受講生詳細のコース情報で適切な値を入力した時に入力チェックに異常が発生しないこと() {
     StudentCourse studentCourse = new StudentCourse();
+    studentCourse.setCourseId("101");
     studentCourse.setCourseName("Java入門");
 
     Set<ConstraintViolation<StudentCourse>> violations = validator.validate(studentCourse);
@@ -157,11 +158,13 @@ class StudentControllerTest {
              },
              "studentCourseList":[
                  {
+                     "courseId":"103",
                      "courseName":"Java応用"
                  }
              ],
              "courseStatusList":[
                   {
+                      "courseId":"103",
                       "status":"受講中"
                   }
              ]
@@ -199,12 +202,14 @@ class StudentControllerTest {
              "studentCourseList":[
                  {
                      "id":"11",
+                     "courseId":"103",
                      "courseName":"Java応用"
                  }
              ],
              "courseStatusList":[
                  {
                      "id":"21",
+                     "courseId":"103",
                      "status":"受講終了"
                  }
              ]

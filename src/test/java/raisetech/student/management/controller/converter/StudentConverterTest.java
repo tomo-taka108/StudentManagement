@@ -114,21 +114,21 @@ class StudentConverterTest {
     student.setId("123");
 
     StudentCourse course1 = new StudentCourse();
-    course1.setId("12");
     course1.setStudentId("123");
+    course1.setCourseId("101");
     course1.setCourseName("Java入門");
     StudentCourse course2 = new StudentCourse();
-    course2.setId("13");
     course2.setStudentId("123");
+    course2.setCourseId("107");
     course2.setCourseName("データベース基礎");
 
     CourseStatus status1 = new CourseStatus();
-    status1.setCourseId("12");
     status1.setStudentId("123");
+    status1.setCourseId("101");
     status1.setStatus("仮申込");
     CourseStatus status2 = new CourseStatus();
-    status2.setCourseId("13");
     status2.setStudentId("123");
+    status2.setCourseId("107");
     status2.setStatus("本申込");
 
     List<Student> studentList = List.of(student);
@@ -167,36 +167,37 @@ class StudentConverterTest {
     studentB.setId("456");
 
     StudentCourse courseA1 = new StudentCourse();
-    courseA1.setId("12");
     courseA1.setStudentId("123");
+    courseA1.setCourseId("101");
     courseA1.setCourseName("Java入門");
     StudentCourse courseA2 = new StudentCourse();
-    courseA2.setId("13");
     courseA2.setStudentId("123");
+    courseA2.setCourseId("107");
     courseA2.setCourseName("データベース基礎");
     StudentCourse courseB3 = new StudentCourse();
-    courseB3.setId("14");
     courseB3.setStudentId("456");
+    courseB3.setCourseId("109");
     courseB3.setCourseName("ネットワーク基礎");
     StudentCourse courseX99 = new StudentCourse(); // 無視されることを確認するために準備
     courseX99.setStudentId("789"); // 存在しない受講生ID、無視されるはず
+    courseX99.setCourseId("103");
     courseX99.setCourseName("Java応用");
 
     CourseStatus statusA1 = new CourseStatus();
-    statusA1.setCourseId("12");
     statusA1.setStudentId("123");
+    statusA1.setCourseId("101");
     statusA1.setStatus("仮申込");
     CourseStatus statusA2 = new CourseStatus();
-    statusA2.setCourseId("13");
     statusA2.setStudentId("123");
+    statusA2.setCourseId("107");
     statusA2.setStatus("本申込");
     CourseStatus statusB3 = new CourseStatus();
-    statusB3.setCourseId("14");
     statusB3.setStudentId("456");
+    statusB3.setCourseId("109");
     statusB3.setStatus("受講中");
     CourseStatus statusX99 = new CourseStatus(); // 無視されることを確認するために準備
-    statusX99.setCourseId("15"); // 存在しないコースID、無視されるはず
     statusX99.setStudentId("123");
+    statusX99.setCourseId("150"); // 存在しないコースID、無視されるはず
     statusX99.setStatus("受講終了");
 
     List<Student> studentList = List.of(studentA, studentB);

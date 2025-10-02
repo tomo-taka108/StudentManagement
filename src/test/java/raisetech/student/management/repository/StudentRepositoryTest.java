@@ -66,51 +66,63 @@ class StudentRepositoryTest {
     switch (studentId) {
       case "1" -> {
         assertThat(result.get(0).getCourseName()).isEqualTo("Java入門");
-        assertThat(result.get(1).getCourseName()).isEqualTo("Spring Boot実践");
+        assertThat(result.get(1).getCourseName()).isEqualTo("ネットワーク実践");
       }
-      case "2" -> assertThat(result.get(0).getCourseName()).isEqualTo("Java入門");
+      case "2" -> assertThat(result.get(0).getCourseName()).isEqualTo("Java実践");
       case "3" -> {
-        assertThat(result.get(0).getCourseName()).isEqualTo("データベース基礎");
-        assertThat(result.get(1).getCourseName()).isEqualTo("Python超入門");
+        assertThat(result.get(0).getCourseName()).isEqualTo("Java応用");
+        assertThat(result.get(1).getCourseName()).isEqualTo("デザイン");
       }
       case "4" -> assertThat(result.get(0).getCourseName()).isEqualTo("データベース基礎");
       case "5" -> {
         assertThat(result.get(0).getCourseName()).isEqualTo("ネットワーク基礎");
-        assertThat(result.get(1).getCourseName()).isEqualTo("Java応用");
+        assertThat(result.get(1).getCourseName()).isEqualTo("Python入門");
       }
     }
   }
 
-  @Test // List<StudentCourse> searchStudentCourse(String studentId)
-  void 登録されていない受講生IDで受講生コース情報の検索が行えないこと(){
+  @Test
+    // List<StudentCourse> searchStudentCourse(String studentId)
+  void 登録されていない受講生IDで受講生コース情報の検索が行えないこと() {
     List<StudentCourse> result = sut.searchStudentCourse("6");
     assertThat(result).isEmpty(); // 複数検索のためisEmptyを使う（「リスト」という入れ物は返すが中身は「空」。isNullではない）
   }
 
   @Test
     // List<CourseStatus> searchCourseStatusList()
-  void コース申込状況の全件検索が行えること(){
-    List<CourseStatus>result=sut.searchCourseStatusList();
+  void コース申込状況の全件検索が行えること() {
+    List<CourseStatus> result = sut.searchCourseStatusList();
     assertThat(result.size()).isEqualTo(8);
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"1", "2", "3", "4"})
-    // List<CourseStatus> searchCourseStatus(String courseId)
-  void コースIDに紐づくコース申込状況の検索が行えること(String courseId) {
-    List<CourseStatus> result = sut.searchCourseStatus(courseId);
+  @ValueSource(strings = {"1", "2", "3", "4", "5"})
+    // List<CourseStatus> searchCourseStatus(String studentId)
+  void 受講生IDに紐づくコース申込状況の検索が行えること(String studentId) {
+    List<CourseStatus> result = sut.searchCourseStatus(studentId);
 
-    switch (courseId) {
-      case "1" -> assertThat(result.get(0).getStatus()).isEqualTo("仮申込");
+    switch (studentId) {
+      case "1" -> {
+        assertThat(result.get(0).getStatus()).isEqualTo("仮申込");
+        assertThat(result.get(1).getStatus()).isEqualTo("本申込");
+      }
       case "2" -> assertThat(result.get(0).getStatus()).isEqualTo("本申込");
-      case "3" -> assertThat(result.get(0).getStatus()).isEqualTo("受講中");
+      case "3" -> {
+        assertThat(result.get(0).getStatus()).isEqualTo("受講中");
+        assertThat(result.get(1).getStatus()).isEqualTo("受講中");
+      }
       case "4" -> assertThat(result.get(0).getStatus()).isEqualTo("受講終了");
+      case "5" -> {
+        assertThat(result.get(0).getStatus()).isEqualTo("仮申込");
+        assertThat(result.get(1).getStatus()).isEqualTo("受講終了");
+      }
     }
   }
 
-  @Test // List<CourseStatus> searchCourseStatus(String courseId)
-  void 登録されていないコースIDでコース申込状況の検索が行えないこと(){
-    List<CourseStatus> result = sut.searchCourseStatus("9");
+  @Test
+    // List<CourseStatus> searchCourseStatus(String studentId)
+  void 登録されていない受講生IDでコース申込状況の検索が行えないこと() {
+    List<CourseStatus> result = sut.searchCourseStatus("6");
     assertThat(result).isEmpty(); // 複数検索のためisEmptyを使う（「リスト」という入れ物は返すが中身は「空」。isNullではない）
   }
 
@@ -139,7 +151,8 @@ class StudentRepositoryTest {
   void 受講生コース情報の登録が行えること() {
     StudentCourse studentCourse = new StudentCourse();
     studentCourse.setStudentId("3");
-    studentCourse.setCourseName("Java超応用");
+    studentCourse.setCourseId("101");
+    studentCourse.setCourseName("Java入門");
     studentCourse.setStartDate(LocalDate.of(2025, 9, 1));
     studentCourse.setEndDate(LocalDate.of(2025, 12, 15));
 
@@ -155,22 +168,16 @@ class StudentRepositoryTest {
     // 先に新しいコースを登録
     StudentCourse studentCourse = new StudentCourse();
     studentCourse.setStudentId("3");
-    studentCourse.setCourseName("Java超応用");
+    studentCourse.setCourseId("101");
+    studentCourse.setCourseName("Java入門");
     studentCourse.setStartDate(LocalDate.of(2025, 9, 1));
     studentCourse.setEndDate(LocalDate.of(2025, 12, 15));
     sut.registerStudentCourse(studentCourse);
 
-    // 自動採番されたコースIDを取得
-    int newCourseId = sut.searchStudentCourseList()
-        .stream()
-        .mapToInt(c -> Integer.parseInt(c.getId()))
-        .max()
-        .orElseThrow();
-
     // 新しい申込状況を登録
     CourseStatus courseStatus = new CourseStatus();
-    courseStatus.setCourseId(String.valueOf(newCourseId));
     courseStatus.setStudentId("3");
+    courseStatus.setCourseId("101");
     courseStatus.setStatus("仮申込");
 
     sut.registerCourseStatus(courseStatus);
@@ -204,16 +211,18 @@ class StudentRepositoryTest {
 
   @Test
     // void updateStudentCourse(StudentCourse studentCourse)
-  void 受講生コース情報のコース名の更新が行えること() {
+  void 受講生コース情報のコースIDよびコース名の更新が行えること() {
     StudentCourse studentCourse = new StudentCourse();
     studentCourse.setId("3");
-    studentCourse.setCourseName("データベース応用");
-    // id:3のコース情報について、「データベース基礎」➡「データベース応用」へ更新
+    studentCourse.setCourseId("111");
+    studentCourse.setCourseName("フロントエンド");
+    // id:3のコース情報について、コースID:「103」➡「111」、コース名：「Java応用」➡「フロントエンド」へ更新
 
     sut.updateStudentCourse(studentCourse);
 
     List<StudentCourse> result = sut.searchStudentCourseList();
-    assertThat(result.get(2).getCourseName()).isEqualTo("データベース応用");
+    assertThat(result.get(2).getCourseId()).isEqualTo("111");
+    assertThat(result.get(2).getCourseName()).isEqualTo("フロントエンド");
   }
 
   @Test

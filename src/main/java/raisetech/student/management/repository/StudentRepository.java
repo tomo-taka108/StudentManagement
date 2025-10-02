@@ -57,10 +57,10 @@ public interface StudentRepository {
   /**
    * コースIDに紐づくコース申込状況の検索を行います。
    *
-   * @param courseId コースID
-   * @return コースIDに紐づくコース申込状況
+   * @param studentId 受講生ID
+   * @return 受講生IDに紐づくコース申込状況
    */
-  List<CourseStatus> searchCourseStatus(String courseId);
+  List<CourseStatus> searchCourseStatus(String studentId);
 
   /**
    * 受講生を新規登録します。* IDに関しては自動採番を行う。
