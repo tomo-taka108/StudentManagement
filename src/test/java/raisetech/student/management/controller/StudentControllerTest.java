@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
 import raisetech.student.management.domain.StudentDetail;
@@ -38,6 +39,7 @@ class StudentControllerTest {
   @MockitoBean
   private StudentService service;
 
+  // 入力チェック（バリデーションテスト）に必要
   private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
   @Test
@@ -101,9 +103,20 @@ class StudentControllerTest {
   @Test
   void 受講生詳細のコース情報で適切な値を入力した時に入力チェックに異常が発生しないこと() {
     StudentCourse studentCourse = new StudentCourse();
+    studentCourse.setCourseId("101");
     studentCourse.setCourseName("Java入門");
 
     Set<ConstraintViolation<StudentCourse>> violations = validator.validate(studentCourse);
+
+    assertThat(violations.size()).isEqualTo(0);
+  }
+
+  @Test
+  void コース申込状況で適切な値を入力した時に入力チェックに異常が発生しないこと() {
+    CourseStatus courseStatus = new CourseStatus();
+    courseStatus.setStatus("本申込");
+
+    Set<ConstraintViolation<CourseStatus>> violations = validator.validate(courseStatus);
 
     assertThat(violations.size()).isEqualTo(0);
   }
@@ -145,8 +158,15 @@ class StudentControllerTest {
              },
              "studentCourseList":[
                  {
+                     "courseId":"103",
                      "courseName":"Java応用"
                  }
+             ],
+             "courseStatusList":[
+                  {
+                      "courseId":"103",
+                      "status":"受講中"
+                  }
              ]
          }
         """;
@@ -181,11 +201,16 @@ class StudentControllerTest {
              },
              "studentCourseList":[
                  {
-                     "id":"150",
-                     "studentId":"123",
-                     "courseName":"Java応用",
-                     "startDate":"2025-04-01T00:00:00.000000",
-                     "endDate":"2025-09-30T00:00:00.000000"
+                     "id":"11",
+                     "courseId":"103",
+                     "courseName":"Java応用"
+                 }
+             ],
+             "courseStatusList":[
+                 {
+                     "id":"21",
+                     "courseId":"103",
+                     "status":"受講終了"
                  }
              ]
          }

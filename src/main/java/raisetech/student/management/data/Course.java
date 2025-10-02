@@ -8,32 +8,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Schema(description = "受講生コース情報を表すデータモデル")
+@Schema(description = "コース名に紐づくコースIDを定義するデータモデル（コースマスタ）")
 @Getter
 @Setter
 @NoArgsConstructor // 引数なしコンストラクタを自動生成
 @AllArgsConstructor // 全フィールドを引数に持つコンストラクタを自動生成
 
-public class StudentCourse {
+public class Course {
 
-  @Schema(description = "コースID（自動付与）", example = "1")
-  private String id; // DB自動採番
-
-  @Schema(description = "受講生ID", example = "1")
-  private String studentId;
-
-  @Schema(description = "コースそのものの識別子", example = "101")
+  @Schema(description = "コースID（識別子）", example = "101")
   @NotBlank(message = "【courseId】入力が必要です。")
-  private String courseId;
+  private String courseId; // VARCHAR(50) に対応
 
   @Schema(description = "コース名", example = "Java入門")
   @NotBlank(message = "【courseName】入力が必要です。")
-  private String courseName;
-
-  @Schema(description = "受講開始日", example = "2025-04-01")
-  private LocalDate startDate;
-
-  @Schema(description = "受講生終了日（予定日）", example = "2025-06-30")
-  private LocalDate endDate;
+  private String courseName; // course_name カラムに対応
 
 }
