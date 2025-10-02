@@ -3,7 +3,9 @@ package raisetech.student.management.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +68,7 @@ public class StudentService {
     List<CourseStatus> allCourseStatusList = repository.searchCourseStatusList();
 
     Set<String> courseIds = studentCourse.stream()
-        .map(StudentCourse::getId)
+        .map(StudentCourse::getCourseId)
         .collect(Collectors.toSet());
 
     List<CourseStatus> courseStatus = allCourseStatusList.stream()
@@ -90,23 +92,36 @@ public class StudentService {
     List<StudentCourse> studentCourseList = studentDetail.getStudentCourseList();
     List<CourseStatus> courseStatusList = studentDetail.getCourseStatusList();
 
-    // ★ バリデーション: コース数と申込状況数が一致しない場合はエラー
-    if (studentCourseList.size() != courseStatusList.size()) {
-      throw new IllegalArgumentException("コース数とコース申込状況の数が一致しません。");
+    // ★ バリデーション: courseIdの重複チェック
+    Set<String> courseIds = new HashSet<>();
+    for (StudentCourse course : studentCourseList) {
+      if (!courseIds.add(course.getCourseId())) {
+        throw new IllegalArgumentException("同じ courseId が複数あります：" + course.getCourseId());
+      }
+    }
+
+    // ★ courseId の存在チェック
+    Set<String> statusCourseIds = courseStatusList.stream()
+        .map(CourseStatus::getCourseId)
+        .collect(Collectors.toSet());
+    if (!courseIds.equals(statusCourseIds)) {
+      throw new IllegalArgumentException("studentCourseList と courseStatusList の courseId が一致していません。");
     }
 
     // 受講生の登録
     repository.registerStudent(student);
 
-    // 受講生コース情報とコース申込状況を登録
-    for (int i = 0; i < studentCourseList.size(); i++) {
-      StudentCourse course = studentCourseList.get(i);
-      CourseStatus status = courseStatusList.get(i);
+    // courseId をキーに Map にして lookup
+    Map<String, CourseStatus> courseStatusMap = courseStatusList.stream()
+        .collect(Collectors.toMap(CourseStatus::getCourseId, status -> status));
 
-      initStudentCourse(course, student);
+    // 受講生コース情報とコース申込状況を登録
+    for (StudentCourse course : studentCourseList) {
+      initStudentCourse(course, student); // studentId, start/end日を設定
       repository.registerStudentCourse(course);
 
-      initCourseStatus(status, student, course);
+      CourseStatus status = courseStatusMap.get(course.getCourseId());
+      initCourseStatus(status, student, course); // studentId, studentCourse.id を設定
       repository.registerCourseStatus(status);
     }
 
@@ -135,8 +150,8 @@ public class StudentService {
    * @param course  受講生コース情報
    */
   void initCourseStatus(CourseStatus status, Student student, StudentCourse course) {
-    status.setCourseId(course.getId());
     status.setStudentId(student.getId());
+    status.setCourseId(course.getCourseId());
   }
 
   /**

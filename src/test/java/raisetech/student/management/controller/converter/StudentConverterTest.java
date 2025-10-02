@@ -31,6 +31,7 @@ class StudentConverterTest {
     StudentCourse studentCourse = new StudentCourse(
         "1",
         "1",
+        "101",
         "Java入門",
         LocalDate.now(),
         LocalDate.now().plusYears(1));
@@ -38,7 +39,7 @@ class StudentConverterTest {
     CourseStatus courseStatus = new CourseStatus(
         "1",
         "1",
-        "1",
+        "101",
         "仮申込");
 
     List<Student> studentList = List.of(student);
@@ -63,6 +64,7 @@ class StudentConverterTest {
     StudentCourse studentCourse = new StudentCourse(
         "1",
         "2",
+        "101",
         "Java入門",
         LocalDate.now(),
         LocalDate.now().plusYears(1));
@@ -70,7 +72,7 @@ class StudentConverterTest {
     CourseStatus courseStatus = new CourseStatus(
         "1",
         "1",
-        "2",
+        "101",
         "仮申込");
 
     List<Student> studentList = List.of(student);

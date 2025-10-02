@@ -8,37 +8,53 @@
   <mapper namespace="raisetech.student.management.repository.StudentRepository">
   <!-- namespace は Mapperインターフェースのパッケージ+クラス名と一致させる -->
 
-  <!-- 受講生（全件）を検索 -->
+  <!-- ============================ -->
+  <!-- 受講生（Student）検索 -->
+  <!-- ============================ -->
+
+  <!-- 全件検索 -->
   <select id="search" resultType="raisetech.student.management.data.Student">
   <!-- id は Mapperインターフェース内のメソッド名に一致 -->
   <!-- resultType は戻り値の型（クラスのフルパス） -->
   SELECT * FROM students
   </select>
 
-  <!-- 受講生（ID紐づき）を検索 -->
+  <!-- ID指定検索 -->
   <select id="searchStudent" resultType="raisetech.student.management.data.Student">
   SELECT * FROM students WHERE id = #{id}
   </select>
 
-  <!-- 受講生コース情報（全件）を検索 -->
+  <!-- ============================ -->
+  <!-- StudentCourse（受講生コース情報）検索 -->
+  <!-- ============================ -->
+
+  <!-- 全件検索 -->
   <select id="searchStudentCourseList" resultType="raisetech.student.management.data.StudentCourse">
   SELECT * FROM student_courses
   </select>
 
-  <!-- 受講生コース情報（受講生ID紐づき）を検索 -->
+  <!-- 受講生ID指定検索 -->
   <select id="searchStudentCourse" resultType="raisetech.student.management.data.StudentCourse">
   SELECT * FROM student_courses WHERE student_id = #{studentId}
   </select>
 
-  <!-- コース申込状況（全件）を検索 -->
+  <!-- ============================ -->
+  <!-- CourseStatus（コース申込状況）検索 -->
+  <!-- ============================ -->
+
+  <!-- 全件検索 -->
   <select id="searchCourseStatusList" resultType="raisetech.student.management.data.CourseStatus">
     SELECT * FROM course_status
   </select>
 
-  <!-- コース申込状況（コースID紐づき）を検索 -->
+  <!-- コースID指定検索 -->
   <select id="searchCourseStatus" resultType="raisetech.student.management.data.CourseStatus">
     SELECT * FROM course_status WHERE course_id = #{courseId}
   </select>
+
+  <!-- ============================ -->
+  <!-- 新規登録 -->
+  <!-- ============================ -->
 
   <!-- 受講生を新規登録 -->
   <insert id="registerStudent" parameterType="raisetech.student.management.data.Student" useGeneratedKeys="true" keyProperty="id">
@@ -48,15 +64,19 @@
 
   <!-- 受講生コース情報を新規登録 -->
   <insert id="registerStudentCourse" parameterType="raisetech.student.management.data.StudentCourse" useGeneratedKeys="true" keyProperty="id">
-  INSERT INTO student_courses(student_id,course_name,start_date,end_date)
-  VALUES(#{studentId},#{courseName},#{startDate},#{endDate})
+  INSERT INTO student_courses(student_id,course_id,course_name,start_date,end_date)
+  VALUES(#{studentId},#{courseId},#{courseName},#{startDate},#{endDate})
   </insert>
 
   <!-- コース申込状況を新規登録 -->
   <insert id="registerCourseStatus" parameterType="raisetech.student.management.data.CourseStatus" useGeneratedKeys="true" keyProperty="id">
-    INSERT INTO course_status(course_id,student_id,status)
-    VALUES(#{courseId},#{studentId},#{status})
+    INSERT INTO course_status(student_id,course_id,status)
+    VALUES(#{studentId},#{courseId},#{status})
   </insert>
+
+  <!-- ============================ -->
+  <!-- 更新 -->
+  <!-- ============================ -->
 
   <!-- 受講生を更新 -->
   <update id="updateStudent" parameterType="raisetech.student.management.data.Student">

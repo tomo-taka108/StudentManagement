@@ -16,16 +16,16 @@ import lombok.Setter;
 
 public class CourseStatus {
 
-  @Schema(description = "コース申込状況ID（自動付与）",example = "1")
+  @Schema(description = "コース申込状況ID（自動付与）", example = "1")
   private String id;
 
-  @Schema(description = "コースID",example = "1")
-  private String courseId;
-
-  @Schema(description = "受講生ID",example = "1")
+  @Schema(description = "受講生ID", example = "1")
   private String studentId;
 
-  @Schema(description = "コース申込状況",example = "本申込")
+  @Schema(description = "コースID", example = "1")
+  private String courseId;
+
+  @Schema(description = "コース申込状況", example = "本申込")
   @NotBlank(message = "【status】「仮申込」「本申込」「受講中」「受講終了」のいずれかの入力が必要です。")
   @Pattern(regexp = "仮申込|本申込|受講中|受講終了", message = "【status】は「仮申込」「本申込」「受講中」「受講終了」のいずれかの入力が必要です。")
   private String status;
