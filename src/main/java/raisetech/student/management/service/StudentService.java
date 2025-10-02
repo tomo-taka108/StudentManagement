@@ -73,7 +73,7 @@ public class StudentService {
 
     List<CourseStatus> courseStatus = allCourseStatusList.stream()
         .filter(status -> courseIds.contains(status.getCourseId()))
-        .toList();
+        .collect(Collectors.toList());
 
     return new StudentDetail(student, studentCourse, courseStatus);
   }

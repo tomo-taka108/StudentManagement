@@ -38,12 +38,12 @@ public class StudentConverter {
 
       List<String> courseId = convertStudentCourseList.stream()
           .map(studentCourse -> studentCourse.getCourseId())
-          .toList();
+          .collect(Collectors.toList());
 
       List<CourseStatus> convertCourseStatusList = courseStatusList.stream()
           .filter(courseStatus -> student.getId().equals(courseStatus.getStudentId())
               && courseId.contains(courseStatus.getCourseId()))
-          .toList();
+          .collect(Collectors.toList());
 
       studentDetail.setCourseStatusList(convertCourseStatusList);
 
