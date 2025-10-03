@@ -65,15 +65,7 @@ public class StudentService {
     List<StudentCourse> studentCourse = repository.searchStudentCourse(student.getId());
 
     // 受講生が存在すればコース申込状況を取得
-    List<CourseStatus> allCourseStatusList = repository.searchCourseStatusList();
-
-    Set<String> courseIds = studentCourse.stream()
-        .map(StudentCourse::getCourseId)
-        .collect(Collectors.toSet());
-
-    List<CourseStatus> courseStatus = allCourseStatusList.stream()
-        .filter(status -> courseIds.contains(status.getCourseId()))
-        .collect(Collectors.toList());
+    List<CourseStatus> courseStatus = repository.searchCourseStatus(student.getId());
 
     return new StudentDetail(student, studentCourse, courseStatus);
   }
