@@ -26,7 +26,7 @@ public class CourseStatus {
   private String courseId;
 
   @Schema(description = "コース申込状況", example = "本申込")
-  @NotBlank(message = "【status】「仮申込」「本申込」「受講中」「受講終了」のいずれかを入力してください。")
+  @NotBlank(message = "ステータスは「仮申込」「本申込」「受講中」「受講終了」のいずれかを入力してください。")
   @Pattern(regexp = "仮申込|本申込|受講中|受講終了", message = "ステータスは「仮申込」「本申込」「受講中」「受講終了」のいずれかを入力してください。")
   private String status;
 

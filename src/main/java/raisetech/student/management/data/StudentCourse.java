@@ -23,11 +23,11 @@ public class StudentCourse {
   private String studentId;
 
   @Schema(description = "コースそのものの識別子", example = "101")
-  @NotBlank(message = "【courseId】入力が必要です。")
+  @NotBlank(message = "コースIDは入力が必要です。")
   private String courseId;
 
   @Schema(description = "コース名", example = "Java入門")
-  @NotBlank(message = "【courseName】入力が必要です。")
+  @NotBlank(message = "コース名は入力が必要です。")
   private String courseName;
 
   @Schema(description = "受講開始日", example = "2025-04-01")

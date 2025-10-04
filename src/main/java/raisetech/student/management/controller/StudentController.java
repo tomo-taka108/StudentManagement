@@ -44,7 +44,7 @@ public class StudentController {
    * @return 受講生詳細一覧（全件）
    */
   @Operation(
-      summary = "受講生一覧の検索",
+      summary = "受講生一覧の検索【条件指定なし】",
       description = "受講生詳細の一覧を検索します。全件検索を行うので、条件指定は行いません。",
       responses = {
           @ApiResponse(
@@ -67,7 +67,7 @@ public class StudentController {
    * @return 受講生【単一】
    */
   @Operation(
-      summary = "受講生の検索",
+      summary = "受講生の検索【受講生ID指定】",
       description = "パスで指定されたIDに該当する受講生詳細を検索します。IDに紐づく受講生が存在しない場合はエラーメッセージを返します。",
       responses = {
           @ApiResponse(
@@ -110,7 +110,7 @@ public class StudentController {
    * @return 検索条件に一致する受講生詳細一覧
    */
   @Operation(
-      summary = "条件指定での受講生一覧の検索",
+      summary = "受講生一覧の検索【検索条件を指定】",
       description = "検索条件に一致する受講生詳細の一覧を検索します。検索条件は任意に複数組み合わせ可能です。",
       responses = {
           @ApiResponse(
@@ -144,7 +144,7 @@ public class StudentController {
    * @return 実行結果
    */
   @Operation(
-      summary = "受講生一覧の検索（検索条件に一致）",
+      summary = "受講生詳細の登録",
       description = "受講生情報の新規登録を行います。登録内容に不備があればエラーメッセージを返します",
       responses = {
           @ApiResponse(
@@ -178,7 +178,7 @@ public class StudentController {
    * @return 実行結果
    */
   @Operation(
-      summary = "受講生の更新",
+      summary = "受講生詳細の更新",
       description = "受講生情報の更新を行います。更新内容に不備があればエラーメッセージを返します。",
       responses = {
           @ApiResponse(

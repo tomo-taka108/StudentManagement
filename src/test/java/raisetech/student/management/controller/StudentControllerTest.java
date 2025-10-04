@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
+import raisetech.student.management.data.StudentSearchCriteria;
 import raisetech.student.management.domain.StudentDetail;
 import raisetech.student.management.exception.StudentNotFoundException;
 import raisetech.student.management.service.StudentService;
@@ -42,23 +43,9 @@ class StudentControllerTest {
   // 入力チェック（バリデーションテスト）に必要
   private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
-  @Test
-  public void 受講生詳細の一覧検索が実行できて空のリストが返ってくること() throws Exception {
-    mockMvc.perform(get("/studentList"))
-        .andExpect(status().isOk())
-        .andExpect(content().json("[]"));
-
-    verify(service, times(1)).searchStudentList();
-  }
-
-  @Test
-  public void 受講生詳細の検索が実行できること() throws Exception {
-    String id = "123";
-    mockMvc.perform(get("/student/{id}", id))
-        .andExpect(status().isOk());
-
-    verify(service, times(1)).searchStudent(id);
-  }
+  /**
+   * データモデルのバリデーションテスト
+   */
 
   @Test
   void 受講生詳細の受講生で適切な値を入力した時に入力チェックに異常が発生しないこと() {
@@ -97,7 +84,7 @@ class StudentControllerTest {
 
     assertThat(violations.size()).isEqualTo(1);
     assertThat(violations).extracting("message")
-        .containsOnly("数字のみ入力するようにしてください。");
+        .containsOnly("数字のみ入力してください。");
   }
 
   @Test
@@ -112,7 +99,7 @@ class StudentControllerTest {
   }
 
   @Test
-  void コース申込状況で適切な値を入力した時に入力チェックに異常が発生しないこと() {
+  void 受講生詳細のコース申込状況で適切な値を入力した時に入力チェックに異常が発生しないこと() {
     CourseStatus courseStatus = new CourseStatus();
     courseStatus.setStatus("本申込");
 
@@ -122,7 +109,46 @@ class StudentControllerTest {
   }
 
   @Test
-  void 受講生詳細の検索で存在しないIDを指定した時に404エラーが返ってくること() throws Exception {
+  void 受講生検索条件で適切な値を入力した時に入力チェックに異常が発生しないこと() {
+    StudentSearchCriteria criteria = new StudentSearchCriteria();
+    criteria.setId("1");
+    criteria.setAgeMin(20);
+    criteria.setAgeMax(50);
+    criteria.setSex("男性");
+    criteria.setStatus("仮申込");
+
+    Set<ConstraintViolation<StudentSearchCriteria>> violations = validator.validate(criteria);
+
+    assertThat(violations.size()).isEqualTo(0);
+  }
+
+
+  /**
+   * Controllerのマッピングテスト
+   */
+
+  @Test
+  public void 受講生詳細の一覧検索_条件指定なし_が実行できて空のリストが返ってくること()
+      throws Exception {
+    mockMvc.perform(get("/studentList"))
+        .andExpect(status().isOk())
+        .andExpect(content().json("[]"));
+
+    verify(service, times(1)).searchStudentList();
+  }
+
+  @Test
+  public void 受講生詳細の検索_受講生ID指定_が実行できること() throws Exception {
+    String id = "123";
+    mockMvc.perform(get("/student/{id}", id))
+        .andExpect(status().isOk());
+
+    verify(service, times(1)).searchStudent(id);
+  }
+
+  @Test
+  void 受講生詳細の検索_受講生ID指定_で存在しないIDを指定した時に404エラーが返ってくること()
+      throws Exception {
     // 存在しないIDを準備
     String id = "9999";
 
@@ -139,6 +165,37 @@ class StudentControllerTest {
   }
 
   @Test
+  void 受講生一覧の検索_検索条件を指定_が実行できること() throws Exception {
+    // リクエストデータは適切に構築して入力チェックの検証も兼ねている。
+    // 本来であれば返りは登録されたデータが入るが、モック化すると意味がないため、レスポンスは作らない。
+
+    // ダミーのリクエストJSON
+    String requestJson = """
+        {
+            "id": "1",
+            "name": "佐藤",
+            "kanaName": "サトウ",
+            "nickname": "タロ",
+            "area": "東京",
+            "ageMin": 15,
+            "ageMax": 50,
+            "sex": "男性",
+            "courseName": "Java",
+            "status": "仮申込",
+            "isDeleted": false
+          }
+        """;
+
+    // POSTリクエストを実行
+    mockMvc.perform(post("/studentList/Criteria")
+            .contentType(String.valueOf(APPLICATION_JSON)) // リクエストがJSON形式であることを指定
+            .content(requestJson))                                   // 実際に送るJSONデータ
+        .andExpect(status().isOk());
+
+    verify(service, times(1)).searchWithCriteria(any());
+  }
+
+  @Test
   void 受講生詳細の登録が実行できて空で返ってくること() throws Exception {
     // リクエストデータは適切に構築して入力チェックの検証も兼ねている。
     // 本来であれば返りは登録されたデータが入るが、モック化すると意味がないため、レスポンスは作らない。
@@ -152,7 +209,7 @@ class StudentControllerTest {
                  "nickname":"ハナちゃん",
                  "email":"hanako@example.com",
                  "area":"大阪",
-                 "age":"30",
+                 "age":30,
                  "sex":"女性",
                  "remark":""
              },
@@ -194,7 +251,7 @@ class StudentControllerTest {
                  "nickname":"ハナちゃん",
                  "email":"hanako@example.com",
                  "area":"大阪",
-                 "age":"30",
+                 "age":30,
                  "sex":"女性",
                  "remark":"",
                  "isDeleted":true
