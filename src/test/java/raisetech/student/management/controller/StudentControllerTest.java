@@ -2,7 +2,7 @@ package raisetech.student.management.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.extension.MediaType.*;
+import org.springframework.http.MediaType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,7 +18,6 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -157,8 +156,7 @@ class StudentControllerTest {
         new StudentNotFoundException("ID" + id + "の受講生が見つかりません。"));
 
     // GETリクエスト実行
-    mockMvc.perform(get("/student/{id}", id)
-            .contentType(String.valueOf(APPLICATION_JSON)))
+    mockMvc.perform(get("/student/{id}", id))
         .andExpect(status().isNotFound()); // 404になることを確認
 
     verify(service, times(1)).searchStudent(id);
@@ -188,7 +186,7 @@ class StudentControllerTest {
 
     // POSTリクエストを実行
     mockMvc.perform(post("/studentList/Criteria")
-            .contentType(String.valueOf(APPLICATION_JSON)) // リクエストがJSON形式であることを指定
+            .contentType(MediaType.APPLICATION_JSON) // リクエストがJSON形式であることを指定
             .content(requestJson))                                   // 実際に送るJSONデータ
         .andExpect(status().isOk());
 
@@ -230,7 +228,7 @@ class StudentControllerTest {
 
     // POSTリクエストを実行
     mockMvc.perform(post("/registerStudent")
-            .contentType(String.valueOf(APPLICATION_JSON)) // リクエストがJSON形式であることを指定
+            .contentType(MediaType.APPLICATION_JSON) // リクエストがJSON形式であることを指定
             .content(requestJson))                                   // 実際に送るJSONデータ
         .andExpect(status().isOk());
 
@@ -275,7 +273,7 @@ class StudentControllerTest {
 
     // PUTリクエストを実行
     mockMvc.perform(put("/updateStudent")
-            .contentType(String.valueOf(APPLICATION_JSON)) // リクエストがJSON形式であることを指定
+            .contentType(MediaType.APPLICATION_JSON) // リクエストがJSON形式であることを指定
             .content(requestJson))                                   // 実際に送るJSONデータ
         .andExpect(status().isOk());
 

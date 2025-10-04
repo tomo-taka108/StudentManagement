@@ -42,11 +42,11 @@ public class StudentSearchCriteria {
 
   @Schema(description = "年齢（最小）", example = "18")
   @Min(value = 0, message = "年齢の最小値は0以上を指定してください。")
-  @Max(value = 150, message = "年齢の最小値は150以下を指定してください。")
+  @Max(value = 150, message = "年齢の最大値は150以下を指定してください。")
   private Integer ageMin;
 
   @Schema(description = "年齢（最大）", example = "50")
-  @Min(value = 0, message = "年齢の最大値は0以上を指定してください。")
+  @Min(value = 0, message = "年齢の最小値は0以上を指定してください。")
   @Max(value = 150, message = "年齢の最大値は150以下を指定してください。")
   private Integer ageMax;
 

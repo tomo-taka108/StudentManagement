@@ -52,7 +52,7 @@ public class Student {
   private int age;
 
   @Schema(description = "性別", example = "男性")
-  @NotBlank(message = "【sex】入力が必要です。")
+  @NotBlank(message = "性別は「男性」「女性」「その他」のいずれかを入力してください。")
   @Pattern(regexp = "男性|女性|その他", message = "性別は「男性」「女性」「その他」のいずれかを入力してください。")
   private String sex;
 
