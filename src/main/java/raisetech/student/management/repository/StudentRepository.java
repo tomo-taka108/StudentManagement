@@ -9,6 +9,8 @@ import org.apache.ibatis.annotations.Update;
 import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
+import raisetech.student.management.data.StudentSearchCriteria;
+import raisetech.student.management.domain.StudentDetail;
 
 /**
  * 受講生テーブルと受講生コース情報テーブルに紐づくRepositoryです。
@@ -46,7 +48,6 @@ public interface StudentRepository {
    */
   List<StudentCourse> searchStudentCourse(String studentId);
 
-
   /**
    * コース申込状況の全件検索を行います。
    *
@@ -61,6 +62,15 @@ public interface StudentRepository {
    * @return 受講生IDに紐づくコース申込状況
    */
   List<CourseStatus> searchCourseStatus(String studentId);
+
+  /**
+   * 検索条件を指定して受講生の検索を行います。
+   *
+   * @param criteria 検索条件
+   * @return 検索条件に一致する受講生一覧
+   */
+  List<Student> searchWithCriteria(StudentSearchCriteria criteria);
+
 
   /**
    * 受講生を新規登録します。* IDに関しては自動採番を行う。
@@ -82,6 +92,7 @@ public interface StudentRepository {
    * @param courseStatus コース申込状況
    */
   void registerCourseStatus(CourseStatus courseStatus);
+
 
   /**
    * 受講生を更新します。
