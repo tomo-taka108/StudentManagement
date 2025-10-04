@@ -53,6 +53,58 @@
   </select>
 
   <!-- ============================ -->
+  <!-- 検索条件指定検索 -->
+  <!-- ============================ -->
+  <select id="searchWithCriteria"
+    resultType="raisetech.student.management.data.Student"
+    parameterType="raisetech.student.management.data.StudentSearchCriteria">
+    SELECT DISTINCT s.* FROM students s
+    <!-- コース情報および申込状況での検索が必要な場合はJOIN -->
+    <if test="courseName != null or status != null">
+      LEFT JOIN student_courses sc ON s.id = sc.student_id
+      LEFT JOIN course_status cs ON s.id = cs.student_id AND sc.course_id = cs.course_id
+    </if>
+    <where>
+      <!-- 各条件が指定されている場合のみ WHERE句に追加 -->
+      <if test="id != null and id != ''">
+        AND s.id = #{id}
+      </if>
+      <if test="name != null and name != ''">
+        AND s.name LIKE CONCAT('%', #{name}, '%')
+      </if>
+      <if test="kanaName != null and kanaName != ''">
+        AND s.kana_name LIKE CONCAT('%', #{kanaName}, '%')
+      </if>
+      <if test="nickname != null and nickname != ''">
+        AND s.nickname LIKE CONCAT('%', #{nickname}, '%')
+      </if>
+      <if test="area != null and area != ''">
+        AND s.area = #{area}
+      </if>
+      <if test="ageMin != null">
+        AND s.age &gt;= #{ageMin}
+      </if>
+      <if test="ageMax != null">
+        AND s.age &lt;= #{ageMax}
+      </if>
+      <if test="sex != null and sex != ''">
+        AND s.sex = #{sex}
+      </if>
+      <if test="courseName != null and courseName != ''">
+        AND sc.course_name LIKE CONCAT('%', #{courseName}, '%')
+      </if>
+      <if test="status != null and status != ''">
+        AND cs.status = #{status}
+      </if>
+      <if test="isDeleted != null">
+        AND s.isDeleted = #{isDeleted}
+      </if>
+    </where>
+    ORDER BY s.id
+  </select>
+
+
+  <!-- ============================ -->
   <!-- 新規登録 -->
   <!-- ============================ -->
 
