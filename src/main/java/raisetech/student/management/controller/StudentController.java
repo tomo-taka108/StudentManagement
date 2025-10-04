@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import raisetech.student.management.data.StudentSearchCriteria;
 import raisetech.student.management.domain.StudentDetail;
 import raisetech.student.management.exception.ErrorResponse;
 import raisetech.student.management.service.StudentService;
@@ -35,6 +36,7 @@ public class StudentController {
   public StudentController(StudentService service) {
     this.service = service;
   }
+
 
   /**
    * 受講生詳細の一覧検索です。 全件検索を行うので、条件指定は行いません。
@@ -56,6 +58,7 @@ public class StudentController {
   public List<StudentDetail> getStudentList() {
     return service.searchStudentList();
   }
+
 
   /**
    * 受講生詳細の検索です。 IDに紐づく任意の受講生の情報を取得します。
@@ -99,6 +102,41 @@ public class StudentController {
     return service.searchStudent(id);
   }
 
+
+  /**
+   * 受講生詳細の一覧検索（検索条件を指定）を行います。
+   *
+   * @param criteria 検索条件
+   * @return 検索条件に一致する受講生詳細一覧
+   */
+  @Operation(
+      summary = "条件指定での受講生一覧の検索",
+      description = "検索条件に一致する受講生詳細の一覧を検索します。検索条件は任意に複数組み合わせ可能です。",
+      responses = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "検索成功",
+              content = @Content(
+                  mediaType = "application/json",
+                  array = @ArraySchema(schema = @Schema(implementation = StudentDetail.class))
+              )),
+          @ApiResponse(
+              responseCode = "400",
+              description = "検索条件の入力内容のバリデーションエラー",
+              content = @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = ErrorResponse.class)
+              ))
+      }
+  )
+  @PostMapping("/studentList/Criteria")
+  public ResponseEntity<List<StudentDetail>> getStudentListWithCriteria(
+      @RequestBody @Valid StudentSearchCriteria criteria) {
+    List<StudentDetail> responseStudentDetails = service.searchWithCriteria(criteria);
+    return ResponseEntity.ok(responseStudentDetails);
+  }
+
+
   /**
    * 受講生詳細の登録を行います。
    *
@@ -106,7 +144,7 @@ public class StudentController {
    * @return 実行結果
    */
   @Operation(
-      summary = "受講生の登録",
+      summary = "受講生一覧の検索（検索条件に一致）",
       description = "受講生情報の新規登録を行います。登録内容に不備があればエラーメッセージを返します",
       responses = {
           @ApiResponse(
@@ -131,6 +169,7 @@ public class StudentController {
     StudentDetail responseStudentDetail = service.registerStudent(studentDetail);
     return ResponseEntity.ok(responseStudentDetail);
   }
+
 
   /**
    * 受講生詳細の更新を行います。キャンセルフラグの更新もここで行います（論理削除）。

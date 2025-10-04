@@ -81,6 +81,21 @@ public class StudentService {
     List<Student> studentList = repository.searchWithCriteria(criteria);
     List<StudentCourse> studentCourseList = repository.searchStudentCourseList();
     List<CourseStatus> courseStatusList = repository.searchCourseStatusList();
+
+    // コース名の条件がある場合はフィルタリング
+    if (criteria.getCourseName() != null && !criteria.getCourseName().isEmpty()) {
+      studentCourseList = studentCourseList.stream()
+          .filter(sc -> sc.getCourseName().contains(criteria.getCourseName()))
+          .collect(Collectors.toList());
+    }
+
+    // ステータスの条件がある場合はフィルタリング
+    if (criteria.getStatus() != null && !criteria.getStatus().isEmpty()) {
+      courseStatusList = courseStatusList.stream()
+          .filter(cs -> cs.getStatus().equals(criteria.getStatus()))
+          .collect(Collectors.toList());
+    }
+
     return converter.convertStudentDetails(studentList, studentCourseList, courseStatusList);
   }
 

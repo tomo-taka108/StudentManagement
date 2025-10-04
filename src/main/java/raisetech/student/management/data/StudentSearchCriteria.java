@@ -25,7 +25,7 @@ import org.hibernate.validator.constraints.Range;
 public class StudentSearchCriteria {
 
   @Schema(description = "受講生ID", example = "1")
-  @Pattern(regexp = "^\\d+$", message = "数字のみ入力してください。")
+  @Pattern(regexp = "^$|^\\d+$", message = "受講生IDは数字のみ入力してください。")
   private String id;
 
   @Schema(description = "氏名（部分一致）", example = "佐藤")
@@ -51,14 +51,16 @@ public class StudentSearchCriteria {
   private Integer ageMax;
 
   @Schema(description = "性別", example = "男性")
-  @Pattern(regexp = "男性|女性|その他", message = "性別は「男性」「女性」「その他」のいずれかを入力してください。")
+  @Pattern(regexp = "^$|男性|女性|その他", message = "性別は「男性」「女性」「その他」のいずれかを入力してください。")
+  // PostmanでのJsonリクエストを考慮し、^$ により空文字列も許容（※ただし実務のAPIでは空文字列を送信しないのが一般的）
   private String sex;
 
   @Schema(description = "コース名（部分一致）", example = "Java")
   private String courseName;
 
   @Schema(description = "コース申込状況", example = "受講中")
-  @Pattern(regexp = "仮申込|本申込|受講中|受講終了", message = "【status】は「仮申込」「本申込」「受講中」「受講終了」のいずれかを入力してください。")
+  @Pattern(regexp = "^$|仮申込|本申込|受講中|受講終了", message = "申込状況は「仮申込」「本申込」「受講中」「受講終了」のいずれかを入力してください。")
+  // PostmanでのJsonリクエストを考慮し、^$ により空文字列も許容（※ただし実務のAPIでは空文字列を送信しないのが一般的）
   private String status;
 
   @Schema(description = "削除フラグ（true: 削除済み, false: 有効）", example = "false")
