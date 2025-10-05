@@ -53,8 +53,9 @@
   </select>
 
   <!-- ============================ -->
-  <!-- 検索条件指定検索 -->
+  <!-- 条件指定検索 -->
   <!-- ============================ -->
+
   <select id="searchWithCriteria"
     resultType="raisetech.student.management.data.Student"
     parameterType="raisetech.student.management.data.StudentSearchCriteria">
@@ -128,6 +129,7 @@
     INSERT INTO course_status(student_id,course_id,status)
     VALUES(#{studentId},#{courseId},#{status})
   </insert>
+
 
   <!-- ============================ -->
   <!-- 更新 -->

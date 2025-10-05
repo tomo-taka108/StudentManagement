@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,7 +52,7 @@ public class Student {
 
   @Schema(description = "性別", example = "男性")
   @NotBlank(message = "性別は「男性」「女性」「その他」のいずれかを入力してください。")
-  @Pattern(regexp = "男性|女性|その他", message = "性別は「男性」「女性」「その他」のいずれかを入力してください。")
+  @Pattern(regexp = "^(男性|女性|その他)$", message = "性別は「男性」「女性」「その他」のいずれかを入力してください。")
   private String sex;
 
   @Schema(description = "備考", example = "真面目な学生")

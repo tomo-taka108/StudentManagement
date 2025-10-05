@@ -187,7 +187,7 @@ public class StudentService {
     // 更新用メソッド【受講生コース情報】
     studentDetail.getStudentCourseList()
         .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
-    // 更新用メソッド【コース申込状況情】
+    // 更新用メソッド【コース申込状況】
     studentDetail.getCourseStatusList()
         .forEach(courseStatus -> repository.updateCourseStatus(courseStatus));
   }

@@ -129,7 +129,7 @@ public class StudentController {
               ))
       }
   )
-  @PostMapping("/studentList/Criteria")
+  @PostMapping("/studentList/criteria")
   public ResponseEntity<List<StudentDetail>> getStudentListWithCriteria(
       @RequestBody @Valid StudentSearchCriteria criteria) {
     List<StudentDetail> responseStudentDetails = service.searchWithCriteria(criteria);

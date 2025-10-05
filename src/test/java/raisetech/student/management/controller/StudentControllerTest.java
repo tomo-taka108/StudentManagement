@@ -185,7 +185,7 @@ class StudentControllerTest {
         """;
 
     // POSTリクエストを実行
-    mockMvc.perform(post("/studentList/Criteria")
+    mockMvc.perform(post("/studentList/criteria")
             .contentType(MediaType.APPLICATION_JSON) // リクエストがJSON形式であることを指定
             .content(requestJson))                                   // 実際に送るJSONデータ
         .andExpect(status().isOk());

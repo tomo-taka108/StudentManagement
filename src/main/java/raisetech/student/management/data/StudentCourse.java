@@ -33,7 +33,7 @@ public class StudentCourse {
   @Schema(description = "受講開始日", example = "2025-04-01")
   private LocalDate startDate;
 
-  @Schema(description = "受講生終了日（予定日）", example = "2025-06-30")
+  @Schema(description = "受講終了日（予定日）", example = "2025-06-30")
   private LocalDate endDate;
 
 }
