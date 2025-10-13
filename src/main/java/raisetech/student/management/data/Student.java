@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +22,7 @@ import org.hibernate.validator.constraints.Range;
 public class Student {
 
   @Schema(description = "受講生ID（自動付与）", example = "1")
-  @Pattern(regexp = "^\\d+$", message = "数字のみ入力するようにしてください。")
+  @Pattern(regexp = "^\\d+$", message = "数字のみ入力してください。")
   private String id;
 
   @Schema(description = "氏名", example = "佐藤太郎")
@@ -52,13 +51,14 @@ public class Student {
   private int age;
 
   @Schema(description = "性別", example = "男性")
-  @NotBlank(message = "【sex】入力が必要です。")
+  @NotBlank(message = "性別は「男性」「女性」「その他」のいずれかを入力してください。")
+  @Pattern(regexp = "^(男性|女性|その他)$", message = "性別は「男性」「女性」「その他」のいずれかを入力してください。")
   private String sex;
 
   @Schema(description = "備考", example = "真面目な学生")
   private String remark;
 
-  @Schema(description = "削除フラグ", example = "false")
+  @Schema(description = "削除フラグ（true: 削除済み, false: 有効）", example = "false")
   @JsonProperty("isDeleted") //JSONのキー名を固定（Javaの@Getter命名とJSON変換キー名を一致させる）
   private boolean isDeleted;
 }

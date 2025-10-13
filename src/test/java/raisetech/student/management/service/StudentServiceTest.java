@@ -1,7 +1,9 @@
 package raisetech.student.management.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,6 +23,7 @@ import raisetech.student.management.controller.converter.StudentConverter;
 import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
+import raisetech.student.management.data.StudentSearchCriteria;
 import raisetech.student.management.domain.StudentDetail;
 import raisetech.student.management.exception.StudentNotFoundException;
 import raisetech.student.management.repository.StudentRepository;
@@ -57,6 +60,7 @@ class StudentServiceTest {
     // 検証
     verify(mockRepository, times(1)).search();
     verify(mockRepository, times(1)).searchStudentCourseList();
+    verify(mockRepository, times(1)).searchCourseStatusList();
     verify(mockConverter, times(1)).convertStudentDetails(studentList, studentCourseList,
         courseStatusList);
   }
@@ -76,13 +80,13 @@ class StudentServiceTest {
     // CourseStatusを準備
     CourseStatus status1 = new CourseStatus();
     status1.setId("51");
-    status1.setStatus("本申込");
+    status1.setStudentId(id);
     List<CourseStatus> courseStatusList = List.of(status1);
 
     // モックの戻り値を設定
     when(mockRepository.searchStudent(id)).thenReturn(student);
     when(mockRepository.searchStudentCourse(id)).thenReturn(studentCourseList);
-    when(mockRepository.searchCourseStatusList()).thenReturn(courseStatusList);
+    when(mockRepository.searchCourseStatus(id)).thenReturn(courseStatusList);
 
     // 実行
     StudentDetail result = sut.searchStudent(id);
@@ -96,7 +100,7 @@ class StudentServiceTest {
     // リポジトリが正しく呼ばれたかを検証
     verify(mockRepository, times(1)).searchStudent(id);
     verify(mockRepository, times(1)).searchStudentCourse(id);
-    verify(mockRepository, times(1)).searchCourseStatusList();
+    verify(mockRepository, times(1)).searchCourseStatus(id);
   }
 
   @Test
@@ -115,7 +119,90 @@ class StudentServiceTest {
 
     verify(mockRepository, times(1)).searchStudent(id);
     verify(mockRepository, never()).searchStudentCourse(anyString());
-    verify(mockRepository, never()).searchCourseStatusList();
+    verify(mockRepository, never()).searchCourseStatus(anyString());
+  }
+
+  @Test
+  void 検索条件を指定して受講生詳細一覧を取得できること() {
+    // 準備
+    StudentSearchCriteria criteria = new StudentSearchCriteria();
+    criteria.setArea("東京");
+
+    List<Student> studentList = List.of(new Student());
+    List<StudentCourse> courseList = List.of(new StudentCourse());
+    List<CourseStatus> statusList = List.of(new CourseStatus());
+
+    when(mockRepository.searchWithCriteria(criteria)).thenReturn(studentList);
+    when(mockRepository.searchStudentCourseList()).thenReturn(courseList);
+    when(mockRepository.searchCourseStatusList()).thenReturn(statusList);
+    when(mockConverter.convertStudentDetails(studentList, courseList, statusList))
+        .thenReturn(List.of(new StudentDetail()));
+
+    // 実行
+    List<StudentDetail> result = sut.searchWithCriteria(criteria);
+
+    // 検証
+    assertNotNull(result);
+    verify(mockRepository, times(1)).searchWithCriteria(criteria);
+    verify(mockRepository, times(1)).searchStudentCourseList();
+    verify(mockRepository, times(1)).searchCourseStatusList();
+    verify(mockConverter, times(1)).convertStudentDetails(studentList, courseList, statusList);
+  }
+
+  @Test
+  void コース名で検索した場合にコースがフィルタリングされること() {
+    // 準備
+    StudentSearchCriteria criteria = new StudentSearchCriteria();
+    criteria.setCourseName("Java");
+
+    StudentCourse course1 = new StudentCourse();
+    course1.setCourseName("Java入門");
+
+    StudentCourse course2 = new StudentCourse();
+    course2.setCourseName("Python基礎");
+
+    when(mockRepository.searchWithCriteria(criteria)).thenReturn(List.of(new Student()));
+    when(mockRepository.searchStudentCourseList()).thenReturn(List.of(course1, course2));
+    when(mockRepository.searchCourseStatusList()).thenReturn(List.of());
+
+    // 実行
+    sut.searchWithCriteria(criteria);
+
+    // 検証：「Java」を含むコース名のみでconvertが呼ばれること
+    verify(mockConverter).convertStudentDetails(
+        any(), // 受講生リストは何でもいい
+        argThat(courses -> courses.size() == 1 && courses.get(0).getCourseName().contains("Java")),
+        // コースリストは「Java」を含むものだけ
+        any() // ステータスリストは何でもいい
+    );
+  }
+
+  @Test
+  void ステータスで検索した場合にステータスがフィルタリングされること() {
+    // 準備
+    StudentSearchCriteria criteria = new StudentSearchCriteria();
+    criteria.setStatus("受講中");
+
+    CourseStatus status1 = new CourseStatus();
+    status1.setStatus("受講中");
+
+    CourseStatus status2 = new CourseStatus();
+    status2.setStatus("仮申込");
+
+    when(mockRepository.searchWithCriteria(criteria)).thenReturn(List.of(new Student()));
+    when(mockRepository.searchStudentCourseList()).thenReturn(List.of());
+    when(mockRepository.searchCourseStatusList()).thenReturn(List.of(status1, status2));
+
+    // 実行
+    sut.searchWithCriteria(criteria);
+
+    // 検証：受講中のみでconvertが呼ばれること
+    verify(mockConverter).convertStudentDetails(
+        any(), // 受講生リストは何でもいい
+        any(), // コースリストは何でもいい
+        argThat(statuses -> statuses.size() == 1 && statuses.get(0).getStatus().equals("受講中"))
+        // 申込状況リストは「受講中」だけ
+    );
   }
 
   @Test

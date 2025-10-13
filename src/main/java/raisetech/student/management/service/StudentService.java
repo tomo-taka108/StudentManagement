@@ -15,6 +15,7 @@ import raisetech.student.management.controller.converter.StudentConverter;
 import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
+import raisetech.student.management.data.StudentSearchCriteria;
 import raisetech.student.management.domain.StudentDetail;
 import raisetech.student.management.exception.StudentNotFoundException;
 import raisetech.student.management.repository.StudentRepository;
@@ -65,17 +66,37 @@ public class StudentService {
     List<StudentCourse> studentCourse = repository.searchStudentCourse(student.getId());
 
     // 受講生が存在すればコース申込状況を取得
-    List<CourseStatus> allCourseStatusList = repository.searchCourseStatusList();
-
-    Set<String> courseIds = studentCourse.stream()
-        .map(StudentCourse::getCourseId)
-        .collect(Collectors.toSet());
-
-    List<CourseStatus> courseStatus = allCourseStatusList.stream()
-        .filter(status -> courseIds.contains(status.getCourseId()))
-        .collect(Collectors.toList());
+    List<CourseStatus> courseStatus = repository.searchCourseStatus(student.getId());
 
     return new StudentDetail(student, studentCourse, courseStatus);
+  }
+
+  /**
+   * 検索条件を指定して受講生詳細を一覧検索します。
+   *
+   * @param criteria 検索条件
+   * @return 受講生詳細一覧（検索条件に一致したもの）
+   */
+  public List<StudentDetail> searchWithCriteria(StudentSearchCriteria criteria) {
+    List<Student> studentList = repository.searchWithCriteria(criteria);
+    List<StudentCourse> studentCourseList = repository.searchStudentCourseList();
+    List<CourseStatus> courseStatusList = repository.searchCourseStatusList();
+
+    // コース名の条件がある場合はフィルタリング
+    if (criteria.getCourseName() != null && !criteria.getCourseName().isEmpty()) {
+      studentCourseList = studentCourseList.stream()
+          .filter(sc -> sc.getCourseName().contains(criteria.getCourseName()))
+          .collect(Collectors.toList());
+    }
+
+    // ステータスの条件がある場合はフィルタリング
+    if (criteria.getStatus() != null && !criteria.getStatus().isEmpty()) {
+      courseStatusList = courseStatusList.stream()
+          .filter(cs -> cs.getStatus().equals(criteria.getStatus()))
+          .collect(Collectors.toList());
+    }
+
+    return converter.convertStudentDetails(studentList, studentCourseList, courseStatusList);
   }
 
   /**
@@ -166,7 +187,7 @@ public class StudentService {
     // 更新用メソッド【受講生コース情報】
     studentDetail.getStudentCourseList()
         .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
-    // 更新用メソッド【コース申込状況情】
+    // 更新用メソッド【コース申込状況】
     studentDetail.getCourseStatusList()
         .forEach(courseStatus -> repository.updateCourseStatus(courseStatus));
   }

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import raisetech.student.management.data.CourseStatus;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentCourse;
+import raisetech.student.management.data.StudentSearchCriteria;
 
 @MybatisTest
 class StudentRepositoryTest {
@@ -21,16 +22,24 @@ class StudentRepositoryTest {
   @Autowired // Repositoryはインターフェースでありnewでインスタンス化できないので、@Autowiredを使う
   private StudentRepository sut;
 
+  /**
+   * 受講生の全件検索のテスト
+   */
+
   @Test
-    // List<Student> search()
+  // List<Student> search()
   void 受講生の全件検索が行えること() {
     List<Student> result = sut.search();
     assertThat(result.size()).isEqualTo(5);
   }
 
+  /**
+   * 受講生の検索【受講生ID指定】のテスト
+   */
+
   @ParameterizedTest
   @ValueSource(strings = {"1", "2", "3", "4", "5"})
-    // Student searchStudent(String id)
+  // Student searchStudent(String id)
   void IDに紐づく受講生の検索が行えること(String id) {
     Student result = sut.searchStudent(id);
 
@@ -50,8 +59,12 @@ class StudentRepositoryTest {
     assertThat(result).isNull(); // 単一検索のためisNullを使う（isEmptyではない）
   }
 
+  /**
+   * 受講生コース情報の検索のテスト
+   */
+
   @Test
-    // List<StudentCourse> searchStudentCourseList()
+  // List<StudentCourse> searchStudentCourseList()
   void 受講生コース情報の全件検索が行えること() {
     List<StudentCourse> result = sut.searchStudentCourseList();
     assertThat(result.size()).isEqualTo(8);
@@ -88,8 +101,12 @@ class StudentRepositoryTest {
     assertThat(result).isEmpty(); // 複数検索のためisEmptyを使う（「リスト」という入れ物は返すが中身は「空」。isNullではない）
   }
 
+  /**
+   * コース申込状況の検索のテスト
+   */
+
   @Test
-    // List<CourseStatus> searchCourseStatusList()
+  // List<CourseStatus> searchCourseStatusList()
   void コース申込状況の全件検索が行えること() {
     List<CourseStatus> result = sut.searchCourseStatusList();
     assertThat(result.size()).isEqualTo(8);
@@ -125,6 +142,50 @@ class StudentRepositoryTest {
     List<CourseStatus> result = sut.searchCourseStatus("6");
     assertThat(result).isEmpty(); // 複数検索のためisEmptyを使う（「リスト」という入れ物は返すが中身は「空」。isNullではない）
   }
+
+  /**
+   * 受講生の検索【検索条件指定】のテスト
+   */
+
+  @Test
+  // List<Student> searchWithCriteria(StudentSearchCriteria criteria)
+  void ID指定で検索できること() {
+    StudentSearchCriteria criteria = new StudentSearchCriteria();
+    criteria.setId("1");
+
+    List<Student> result = sut.searchWithCriteria(criteria);
+
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).getId()).isEqualTo("1");
+  }
+
+  @Test
+    // List<Student> searchWithCriteria(StudentSearchCriteria criteria)
+  void 複数条件の組み合わせで検索できること() {
+    StudentSearchCriteria criteria = new StudentSearchCriteria();
+    criteria.setArea("東京");
+    criteria.setSex("男性");
+    criteria.setAgeMin(18);
+
+    List<Student> result = sut.searchWithCriteria(criteria);
+
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).getName()).isEqualTo("佐藤 太郎");
+  }
+
+  @Test
+    // List<Student> searchWithCriteria(StudentSearchCriteria criteria)
+  void 条件なしで全件取得できること() {
+    StudentSearchCriteria criteria = new StudentSearchCriteria();
+
+    List<Student> result = sut.searchWithCriteria(criteria);
+
+    assertThat(result).hasSize(5);
+  }
+
+  /**
+   * 登録のテスト
+   */
 
   @Test
     // void registerStudent(Student student)
@@ -185,6 +246,10 @@ class StudentRepositoryTest {
     List<CourseStatus> result = sut.searchCourseStatusList();
     assertThat(result.size()).isEqualTo(9);
   }
+
+  /**
+   * 更新のテスト
+   */
 
   @Test
     // void updateStudent(Student student)
