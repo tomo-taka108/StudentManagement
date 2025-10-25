@@ -1,19 +1,28 @@
-# Student Management System（受講生管理システム）
+# Student Management System（受講生管理システム）  
+<br>
 
-## プロジェクト概要
+## サービス概要
 本アプリケーションは、**プログラミングスクールにおける受講生情報を管理するためのシステム**です。  
-受講生の登録・編集・削除・検索を行い、学習進捗や受講コースの把握を容易にします。  
-**Spring Boot + MyBatis + Thymeleaf** を使用し、MVCアーキテクチャの理解と実践を目的に開発しました。
+受講生の基本情報、コース情報、申込状況を統合的に管理し、REST API経由で操作できます。  
+受講生に関する情報の検索・登録・編集・削除を行い、学習進捗や受講コースを容易に把握することが可能です。  
+**Spring Boot + MyBatis + MySQL** を使用し、MVCアーキテクチャの理解と実践を目的に開発しました。
 
 ---
 
 ## 作成背景
-スクールの最終課題として、以下のスキルを習得・実践することを目的に作成しました。
 
-- Spring Bootを用いたWebアプリ開発の流れを理解  
-- MyBatisによるデータベース操作の実践  
-- Thymeleafを使った画面描画の仕組みを学習  
-- AWS EC2を用いたクラウド環境でのデプロイ体験  
+Javaを学習する過程で、**Spring Boot・MyBatis・REST API構成**の全体像を理解しながら、  
+業務レベルの実装を習得することを目的に作成しました。
+
+単なる動作確認に留まらず、以下のような観点で構成を意識しました。
+
+- **Controller → Service → Repository → DB** の流れを明確に理解する  
+- **MyBatis + XML Mapper** による SQL 制御を実務に近い形で体験する  
+- **単体テスト（JUnit / Mockito）** による品質保証を組み込む  
+- **AWS EC2** を用いたクラウド環境でのデプロイ体験  
+- **Swagger UI** による API ドキュメント自動生成  
+
+これらを通じて、**開発者・利用者の双方にとって理解しやすい設計**を心がけています。
 
 ---
 
@@ -21,20 +30,88 @@
 
 | 分類 | 技術 |
 |------|------|
-| 言語 | Java 17 |
-| フレームワーク | Spring Boot 3.x / MyBatis |
-| テンプレートエンジン | Thymeleaf |
-| データベース | MySQL 8.x |
-| ビルドツール | Maven |
-| ORM補助 | MyBatis Mapper XML |
-| バリデーション | Jakarta Validation（`@Valid`, `BindingResult`） |
-| フロント | HTML / CSS (Thymeleaf) |
-| IDE | IntelliJ IDEA |
-| デプロイ先 | AWS EC2（Amazon Linux） |
+| 言語         | Java 21                                      |
+| フレームワーク    | Spring Boot 3.5.3                         |
+| DB         | MySQL（本番） / H2 Database（テスト）             |
+| O/Rマッパー    | MyBatis 3.0.4                                |
+| API仕様書     | Springdoc OpenAPI (Swagger UI)               |
+| テスト        | JUnit 5 / AssertJ / Mockito                  |
+| ビルド管理      | Gradle                                       |
+| Lombok     | Getter/Setter・コンストラクタ自動生成                    |
+| バリデーション    | Jakarta Validation（`@NotBlank`, `@Email` など） |
 
 ---
 
-## システム構成図
+## 機能一覧
+| 機能分類 | 内容 | 対応メソッド |
+|-----------|------|---------------|
+| **受講生一覧表示** | 全件検索（条件なし） | `GET /studentList` |
+| **受講生詳細表示** | 受講生ID指定による単一検索 | `GET /student/{id}` |
+| **条件検索** | 名前・地域・性別・コース名などを複合指定検索 | `POST /studentList/criteria` |
+| **新規登録** | 受講生 + コース情報 + 申込状況の一括登録 | `POST /registerStudent` |
+| **更新処理** | 各テーブルの更新・論理削除（isDeleted）対応 | `PUT /updateStudent` |
+| **例外処理** | バリデーション / 404 / サーバーエラーの一元管理 | `GlobalExceptionHandler` |
+| **OpenAPI仕様書** | Swagger UIによるAPIドキュメント自動生成 | `/swagger-ui/index.html` |
+| **テストコード** | Repository・Service・Controller 各層をJUnitで網羅 | `@MybatisTest` / `@WebMvcTest` / `@ExtendWith(MockitoExtension.class)` |
+
+
+---
+
+## 主なAPIエンドポイント
+| HTTPメソッド | パス                      | 機能概要              | 戻り値                 |
+| -------- | ----------------------- | ----------------- | ------------------- |
+| `GET`    | `/studentList`          | 受講生詳細の全件取得        | List<StudentDetail> |
+| `GET`    | `/student/{id}`         | ID指定で受講生詳細を取得     | StudentDetail       |
+| `POST`   | `/studentList/criteria` | 検索条件指定で受講生一覧取得    | List<StudentDetail> |
+| `POST`   | `/registerStudent`      | 新規受講生登録           | StudentDetail       |
+| `PUT`    | `/updateStudent`        | 受講生情報・コース・申込状況の更新 | String（成功メッセージ）     |
+
+---
+
+## API仕様書
+
+
+---
+
+## MyBatisマッピング概要
+| メソッド                       | SQL概要                          |
+| -------------------------- | ------------------------------ |
+| `search()`                 | `SELECT * FROM students`（全件取得） |
+| `searchStudent(String id)` | ID指定検索                         |
+| `searchWithCriteria()`     | `WHERE`句を動的生成して複合条件検索          |
+| `registerStudent()`        | INSERT（自動採番）                   |
+| `registerStudentCourse()`  | コース登録                          |
+| `registerCourseStatus()`   | 申込状況登録                         |
+| `updateStudent()`          | 受講生更新                          |
+| `updateStudentCourse()`    | コース情報更新                        |
+| `updateCourseStatus()`     | ステータス更新                        |
+
+---
+
+## 主なクラスの役割
+| クラス                          | 役割概要                                              |
+| ---------------------------- | ------------------------------------------------- |
+| **StudentController**        | REST APIエンドポイント定義。GET/POST/PUTを通じてService層を呼び出す。  |
+| **StudentService**           | 業務ロジック層。Repositoryから取得したデータを統合し、StudentDetailを生成。 |
+| **StudentRepository**        | MyBatisのMapperインターフェース。DBアクセスを担当。                 |
+| **StudentConverter**         | Student・Course・Statusを結合してStudentDetailに変換。       |
+| **StudentDetail**            | 学生＋コース＋ステータスの複合モデル。                               |
+| **GlobalExceptionHandler**   | バリデーション違反・404・サーバーエラーなどを共通処理。                     |
+| **StudentNotFoundException** | IDに該当する受講生が存在しない場合の独自例外。                          |
+
+---
+
+## テスト構成
+| 層           | テストクラス                  | 使用技術         | 検証内容       |
+| ----------- | ----------------------- | ------------ | ---------- |
+| Repository層 | `StudentRepositoryTest` | MyBatis + H2 | SQLマッピング検証 |
+| Service層    | `StudentServiceTest`    | Mockito      | ビジネスロジック検証 |
+| Controller層 | `StudentControllerTest` | MockMvc      | エンドポイント検証  |
+| Converter層  | `StudentConverterTest`  | JUnit        | データ変換整合性確認 |
+
+---
+
+## 実行結果（Postman）
 
 ---
 
@@ -42,44 +119,110 @@
 
 ```mermaid
 erDiagram
-    STUDENT {
-        INT id PK
-        VARCHAR name
-        VARCHAR email
-        VARCHAR address
-        DATE birth_date
+    STUDENTS {
+        int id PK
+        string name
+        string kana_name
+        string nickname
+        string email
+        string area
+        int age
+        string sex
+        string remark
+        boolean isDeleted
     }
 
-    COURSE {
-        INT id PK
-        VARCHAR course_name
-        DATE start_date
-        DATE end_date
+    STUDENT_COURSES {
+        int id PK
+        int student_id FK
+        string course_id
+        string course_name
+        date start_date
+        date end_date
     }
 
-    ENROLLMENT {
-        INT id PK
-        INT student_id FK
-        INT course_id FK
-        VARCHAR status
+    COURSE_STATUS {
+        int id PK
+        int student_id FK
+        int course_id
+        enum status
     }
 
-    STUDENT ||--o{ ENROLLMENT : "受講"
-    COURSE  ||--o{ ENROLLMENT : "登録"
+    STUDENTS ||--o{ STUDENT_COURSES : "1人の受講生が複数のコースを持つ"
+    STUDENTS ||--o{ COURSE_STATUS : "1人の受講生が複数の申込状況を持つ"
+    STUDENT_COURSES ||--o{ COURSE_STATUS : "コースごとに申込状況を紐付け"
+
 ```
 
 ---
 
-## 主な機能（CRUD）
+## 工夫した点・苦労した点
+### 1. 三層アーキテクチャを「完全な分離構造」で実装
+Controller・Service・Repositoryの各責務を厳格に分離し、  
+- **Controller**：リクエスト受付とレスポンス生成のみ  
+- **Service**：業務ロジックの集約  
+- **Repository**：MyBatisを通じたSQL実行  
+という構成を一貫。  
+結果として、**各層の役割を意識したテスト設計（MockMvc / Mockito）**が可能になりました。
 
-| 機能 | 説明 |
-|------|------|
-| 一覧表示 | 登録済みの受講生情報をテーブル形式で表示 |
-| 新規登録 | 名前・住所・メールなどを登録 |
-| 編集 | 既存の受講生情報を更新 |
-| 削除 | 論理削除によりフラグ管理 |
-| 検索 | 氏名・居住地・申込状況など複合条件で絞り込み |
-| 入力チェック | Validation + BindingResultを利用した入力検証 |
+---
+
+### 2. MyBatisのXML Mapperを実務レベルで活用
+`studentRepository.xml` にて `<if>`・`<where>`・`<choose>` などの  
+**動的SQL構築**を活用。  
+条件検索では「nullまたは空文字を除外するロジック」を柔軟に設計し、  
+**「複数条件を組み合わせた検索API」**を実現しました。
+
+---
+
+### 3. JUnit・Mockitoによる段階的テスト設計
+単なる動作確認ではなく、  
+- Repository層 … SQLとマッピング検証（H2 DB使用）  
+- Service層 … Mock化でロジックの呼び出し確認  
+- Controller層 … MockMvcによるHTTPテスト  
+という **3層単体テストを全て網羅**。  
+データの整合性を担保するテストケースを多数実装し、  
+**「安全に改修できるコード構造」**を体験的に理解しました。
+
+---
+
+### 4. Bean Validation と ExceptionHandler の統合
+`@Valid` と `BindingResult` を使用して  
+入力チェックを自動化し、`GlobalExceptionHandler` にて  
+**バリデーション・404・500系エラーを一元処理**。  
+REST APIとしての信頼性と可読性を高めました。
+
+---
+
+### 5. ドメインモデルの正規化と再利用性の向上
+受講生詳細（`StudentDetail`）を中心に、  
+`Student` / `StudentCourse` / `CourseStatus` を統合。  
+変換は `StudentConverter` に切り出すことで、  
+**ビジネスロジックからデータ結合処理を分離**し、  
+後続のフロントエンド統合にも耐えられる設計としました。
+
+---
+
+### 6. AWSデプロイへの対応（学習用）
+EC2上でのデプロイ実験を行い、  
+`application.properties` の `server.address=0.0.0.0` 設定や  
+MySQL接続設定（RDS互換）を含め、  
+**クラウド環境でのSpring Boot運用の基礎**を実践しました。
+
+---
+
+## 今後の発展予定
+- ThymeleafによるWeb画面（一覧・登録・更新フォーム）の追加  
+- Dockerfile・docker-composeによる環境自動構築  
+- AWS RDS連携とGitHub ActionsによるCI/CD化  
+- ログイン認証（Spring Security）の導入
+
+---
+
+
+
+
+
 
 
 
