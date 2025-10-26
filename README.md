@@ -2,7 +2,7 @@
 <br>
 
 ## サービス概要
-本アプリケーションは、**プログラミングスクールにおける受講生情報を管理するためのシステム**です。  
+本アプリケーションは、**プログラミングスクールにおける受講生の情報を管理するためのシステム**です。  
 受講生の基本情報、コース情報、申込状況を統合的に管理し、REST API経由で操作できます。  
 受講生に関する情報の検索・登録・編集・削除を行い、学習進捗や受講コースを容易に把握することが可能です。  
 **Spring Boot + MyBatis + MySQL** を使用し、MVCアーキテクチャの理解と実践を目的に開発しました。
@@ -43,17 +43,20 @@ Javaを学習する過程で、**Spring Boot・MyBatis・REST API構成**の全�
 ---
 
 ## 機能一覧
-| 機能分類 | 内容 | 対応メソッド |
+| 機能分類   | 内容 | 対応メソッド |
 |-----------|------|---------------|
-| **受講生一覧表示** | 全件検索（条件なし） | `GET /studentList` |
-| **受講生詳細表示** | 受講生ID指定による単一検索 | `GET /student/{id}` |
-| **条件検索** | 名前・地域・性別・コース名などを複合指定検索 | `POST /studentList/criteria` |
-| **新規登録** | 受講生 + コース情報 + 申込状況の一括登録 | `POST /registerStudent` |
-| **更新処理** | 各テーブルの更新・論理削除（isDeleted）対応 | `PUT /updateStudent` |
-| **例外処理** | バリデーション / 404 / サーバーエラーの一元管理 | `GlobalExceptionHandler` |
-| **OpenAPI仕様書** | Swagger UIによるAPIドキュメント自動生成 | `/swagger-ui/index.html` |
-| **テストコード** | Repository・Service・Controller 各層をJUnitで網羅 | `@MybatisTest` / `@WebMvcTest` / `@ExtendWith(MockitoExtension.class)` |
+| 受講生詳細の一覧表示　 | 受講生詳細の全件検索（条件なし） | `GET /studentList` |
+| 受講生詳細の特定表示　 | 受講生ID指定による受講生詳細の単一検索 | `GET /student/{id}` |
+| 条件検索　 | 氏名・地域・年齢・性別・コース名などを任意に複数指定して受講生詳細を検索 | `POST /studentList/criteria` |
+| 新規登録　 | 受講生 + コース情報 + 申込状況を一括で新規に登録 | `POST /registerStudent` |
+| 更新処理　 | 受講生 + コース情報 + 申込状況を更新・論理削除（isDeleted） | `PUT /updateStudent` |
 
+※ 言葉の定義は以下のとおり
+
+- 受講生： 氏名、居住地域、年齢、性別などをもつオブジェクト  
+- コース： 受講のコース名、開始日、終了日などをもつオブジェクト  
+- 申込状況： 「仮申込」「本申込」といった申込状況などをもつオブジェクト  
+- 受講生詳細： 受講生、コース（申込状況含む）をもつオブジェクト  
 
 ---
 
@@ -69,7 +72,7 @@ Javaを学習する過程で、**Spring Boot・MyBatis・REST API構成**の全�
 ---
 
 ## API仕様書
-
+[API仕様書（GitHub Pages 公開）](https://tomo-taka108.github.io/StudentManagement/)
 
 ---
 
