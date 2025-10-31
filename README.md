@@ -181,62 +181,63 @@ erDiagram
 
 ---
 
-### 1. 三層アーキテクチャを「完全な分離構造」で実装
-Controller・Service・Repositoryの各責務を厳格に分離し、  
-- **Controller**：リクエスト受付とレスポンス生成のみ  
-- **Service**：業務ロジックの集約  
-- **Repository**：MyBatisを通じたSQL実行  
-という構成を一貫。  
-結果として、**各層の役割を意識したテスト設計（MockMvc / Mockito）**が可能になりました。
+### 1. 三層アーキテクチャとして役割で分離
+「Controller」「Service」「Repository」の各役割を分離することを意識しました。 
+- **Controller** ：リクエストの受付とレスポンスの返却  
+- **Service** ：ビジネスロジックの中心  
+- **Repository** ：MyBatis経由でSQL実行  
 
-  
-### 2. MyBatisのXML Mapperを実務レベルで活用
-`studentRepository.xml` にて `<if>`・`<where>`・`<choose>` などの  
-**動的SQL構築**を活用。  
-条件検索では「nullまたは空文字を除外するロジック」を柔軟に設計し、  
-**「複数条件を組み合わせた検索API」**を実現しました。
+上記の分離により、コードの可読性が向上し、テスト設計や機能追加が行いやすくなりました。
+特に、MockMvcやMockitoを用いた層ごとのテストが円滑に進められました。
 
 
-### 3. JUnit・Mockitoによる段階的テスト設計
-単なる動作確認ではなく、  
-- Repository層 … SQLとマッピング検証（H2 DB使用）  
-- Service層 … Mock化でロジックの呼び出し確認  
-- Controller層 … MockMvcによるHTTPテスト  
-という **3層単体テストを全て網羅**。  
-データの整合性を担保するテストケースを多数実装し、  
-**「安全に改修できるコード構造」**を体験的に理解しました。
+### 2. JUnit・Mockitoによる段階的テスト設計
+単なる動作確認だけでなく、各層の役割に応じたテストを設計しました。  
+- Repository層 ：SQLやマッピングの正確性をH2 DBで検証  
+- Service層 ：モック化によりロジックと依存関係の検証を実施
+- Controller層 ：MockMvcでHTTPリクエスト～レスポンスをテスト  
+
+この構成により、改修時のリスクを抑え、安心して変更できるコード基盤を整えました。
 
 
-### 4. Bean Validation と ExceptionHandler の統合
-`@Valid` と `BindingResult` を使用して  
-入力チェックを自動化し、`GlobalExceptionHandler` にて  
-**バリデーション・404・500系エラーを一元処理**。  
-REST APIとしての信頼性と可読性を高めました。
+### 3. Validationと例外処理を一元化
+`@Valid` と `GlobalExceptionHandler` を組み合わせて、  
+入力エラー／存在しないデータ／予期せぬ例外 をすべて一箇所でハンドリングできるようにしました。  
+これにより、Controller層の責務が明確になり、REST APIとしての信頼性が高まりました。
 
 
-### 5. ドメインモデルの正規化と再利用性の向上
-受講生詳細（`StudentDetail`）を中心に、  
-`Student` / `StudentCourse` / `CourseStatus` を統合。  
-変換は `StudentConverter` に切り出すことで、  
-**ビジネスロジックからデータ結合処理を分離**し、  
-後続のフロントエンド統合にも耐えられる設計としました。
+### 4. データモデルの整理と再利用性の強化
+`StudentDetail`（受講生の全情報）を中心に、  
+`Student`、`StudentCourse`、`CourseStatus` を統合的に扱う設計としました。  
+また、`StudentConverter` を導入することで、**データ結合処理をビジネスロジックから分離**し、  
+可読性と再利用性の向上を図りました。
 
 
-### 6. AWSデプロイへの対応（学習用）
-EC2上でのデプロイ実験を行い、  
+### 5. 任意条件による複合検索機能の実装
+`StudentSearchCriteria` クラスを設計し、  
+氏名・フリガナ・年齢・性別・コース名・申込状況などを**任意に組み合わせて検索**できるようにしました。
+MyBatis XMLでは <if> や <where> を駆使して動的SQLを実装し、  
+Service層ではさらにコース名・ステータスのフィルタリングを行っています。  
+これにより、実務的な検索要件に近い柔軟な条件検索を実現しました。
+
+
+### 6. AWS環境での実行検証
+学習の一環として、EC2上でアプリケーションをデプロイし、  
 `application.properties` の `server.address=0.0.0.0` 設定や  
-MySQL接続設定（RDS互換）を含め、  
-**クラウド環境でのSpring Boot運用の基礎**を実践しました。
+RDS互換のMySQL接続設定などを検証しました。
+クラウド環境特有の設定差異を体験できた点は大きな学びとなりました。
 
 
-## 今後の発展予定
+## 今後の展望
 
 ---
  
-- ThymeleafによるWeb画面（一覧・登録・更新フォーム）の追加  
-- Dockerfile・docker-composeによる環境自動構築  
-- AWS RDS連携とGitHub ActionsによるCI/CD化  
-- ログイン認証（Spring Security）の導入
+- フロントエンドの実装  
+- Docker / docker-compose による環境構築の自動化   
+- Spring Security を使ったログイン認証機能の追加
+
+今回の開発を通して、Spring Bootの基礎を一通り体験できましたので、  
+これからは「運用を意識した開発」に一歩ずつ近づいていきたいと思います。
 
 
 
