@@ -37,7 +37,7 @@ public class StudentSearchCriteria {
   @Schema(description = "ニックネーム（部分一致）", example = "タロ")
   private String nickname;
 
-  @Schema(description = "居住地域", example = "東京")
+  @Schema(description = "居住地域", example = "東京都")
   private String area;
 
   @Schema(description = "年齢（最小）", example = "18")

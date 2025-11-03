@@ -25,11 +25,11 @@ public class Student {
   @Pattern(regexp = "^\\d+$", message = "数字のみ入力してください。")
   private String id;
 
-  @Schema(description = "氏名", example = "佐藤太郎")
+  @Schema(description = "氏名", example = "佐藤 太郎")
   @NotBlank(message = "【name】入力が必要です。")
   private String name;
 
-  @Schema(description = "フリガナ", example = "サトウ　タロウ")
+  @Schema(description = "フリガナ", example = "サトウ タロウ")
   @NotBlank(message = "【kanaName】入力が必要です。")
   private String kanaName;
 
@@ -42,11 +42,11 @@ public class Student {
   @Email(message = "メールアドレスの形式が誤っています。")
   private String email;
 
-  @Schema(description = "居住地域", example = "東京")
+  @Schema(description = "居住地域", example = "東京都")
   @NotBlank(message = "【area】入力が必要です。")
   private String area;
 
-  @Schema(description = "年齢", example = "18")
+  @Schema(description = "年齢", example = "35")
   @Range(min = 0, max = 150, message = "【age】0～150までの値を入力してください。")
   private int age;
 

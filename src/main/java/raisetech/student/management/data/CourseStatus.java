@@ -22,10 +22,10 @@ public class CourseStatus {
   @Schema(description = "受講生ID", example = "1")
   private String studentId;
 
-  @Schema(description = "コースID", example = "1")
+  @Schema(description = "コースそのものの識別子", example = "101")
   private String courseId;
 
-  @Schema(description = "コース申込状況", example = "本申込")
+  @Schema(description = "コース申込状況", example = "仮申込")
   @NotBlank(message = "ステータスは「仮申込」「本申込」「受講中」「受講終了」のいずれかを入力してください。")
   @Pattern(regexp = "^(仮申込|本申込|受講中|受講終了)$", message = "ステータスは「仮申込」「本申込」「受講中」「受講終了」のいずれかを入力してください。")
   private String status;

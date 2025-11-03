@@ -79,7 +79,7 @@ class StudentRepositoryTest {
     switch (studentId) {
       case "1" -> {
         assertThat(result.get(0).getCourseName()).isEqualTo("Java入門");
-        assertThat(result.get(1).getCourseName()).isEqualTo("ネットワーク実践");
+        assertThat(result.get(1).getCourseName()).isEqualTo("デザイン");
       }
       case "2" -> assertThat(result.get(0).getCourseName()).isEqualTo("Java実践");
       case "3" -> {
@@ -89,7 +89,7 @@ class StudentRepositoryTest {
       case "4" -> assertThat(result.get(0).getCourseName()).isEqualTo("データベース基礎");
       case "5" -> {
         assertThat(result.get(0).getCourseName()).isEqualTo("ネットワーク基礎");
-        assertThat(result.get(1).getCourseName()).isEqualTo("Python入門");
+        assertThat(result.get(1).getCourseName()).isEqualTo("デザイン");
       }
     }
   }
@@ -163,9 +163,9 @@ class StudentRepositoryTest {
     // List<Student> searchWithCriteria(StudentSearchCriteria criteria)
   void 複数条件の組み合わせで検索できること() {
     StudentSearchCriteria criteria = new StudentSearchCriteria();
-    criteria.setArea("東京");
+    criteria.setArea("東京都");
     criteria.setSex("男性");
-    criteria.setAgeMin(18);
+    criteria.setAgeMin(35);
 
     List<Student> result = sut.searchWithCriteria(criteria);
 
@@ -191,11 +191,11 @@ class StudentRepositoryTest {
     // void registerStudent(Student student)
   void 受講生の登録が行えること() {
     Student student = new Student();
-    student.setName("山田花子");
+    student.setName("山田 花子");
     student.setKanaName("ヤマダハナコ");
     student.setNickname("ハナちゃん");
     student.setEmail("hanako@example.com");
-    student.setArea("東京");
+    student.setArea("東京都");
     student.setAge(30);
     student.setSex("女性");
     student.setRemark("");
@@ -256,22 +256,22 @@ class StudentRepositoryTest {
   void 受講生の更新が行えること() {
     Student student = new Student(
         "3",
-        "田中一郎",
-        "タナカイチロウ",
+        "田中 一郎",
+        "タナカ イチロウ",
         "イチくん",
         "ichiro.tanaka@exapmle.com",
-        "群馬",
-        21,
+        "群馬県",
+        46,
         "男性",
         "成績優秀",
         false);
-    // areaを「秋田」➡「群馬」、ageを「20」➡「21」に更新
+    // areaを「秋田県」➡「群馬県」、ageを「45」➡「46」に更新
 
     sut.updateStudent(student);
 
     Student result = sut.searchStudent("3");
-    assertThat(result.getArea()).isEqualTo("群馬");
-    assertThat(result.getAge()).isEqualTo(21);
+    assertThat(result.getArea()).isEqualTo("群馬県");
+    assertThat(result.getAge()).isEqualTo(46);
   }
 
   @Test

@@ -10,24 +10,34 @@ CREATE TABLE students (
     remark varchar(255) DEFAULT NULL,
     isDeleted boolean DEFAULT FALSE,
     PRIMARY KEY (id)
-  );
+);
 
 CREATE TABLE student_courses (
     id int AUTO_INCREMENT,
     student_id int NOT NULL,
-    course_id int NOT NULL,
+    course_id varchar(50) NOT NULL,
     course_name varchar(50) NOT NULL,
     start_date date DEFAULT NULL,
     end_date date DEFAULT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (student_id) REFERENCES students(id)
-  );
+);
 
 CREATE TABLE course_status (
     id int AUTO_INCREMENT,
     student_id int NOT NULL,
-    course_id int NOT NULL,
+    course_id varchar(50) NOT NULL,
     status enum('仮申込','本申込','受講中','受講終了'),
     PRIMARY KEY (id),
     FOREIGN KEY (student_id) REFERENCES students(id)
-  );
+);
+
+-- =============================================
+-- 【未使用】将来の正規化用テーブル
+-- 現在はstudent_coursesにcourse_nameを直接持たせているため未使用
+-- =============================================
+-- CREATE TABLE courses (
+--     course_id varchar(50) NOT NULL,
+--     course_name varchar(50) NOT NULL,
+--     PRIMARY KEY (course_id)
+-- );
